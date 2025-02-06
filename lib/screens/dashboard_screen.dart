@@ -6,6 +6,7 @@ import 'drawers/payment_drawer.dart';
 // import 'drawers/profile_drawer.dart';
 // import 'drawers/sidebar_drawer/events_drawer.dart';
 // import 'drawers/sidebar_drawer/trades_drawer.dart';
+import 'drawers/sidebar_drawer/trades_drawer.dart';
 import 'provider/drawer_provider.dart';
 import 'provider/selected_index_provider.dart';
 import 'sidebar/rsidebar_section.dart';
@@ -20,22 +21,12 @@ class TradeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget? selectedDrawer; 
-
-    // void openDrawer(Widget drawerContent) {
-    //   selectedDrawer = drawerContent;
-    //   scaffoldKey.currentState?.openDrawer(); 
-    // }
-
-    void openDrawer(BuildContext context, Widget drawerContent) {
-    Scaffold.of(context).openDrawer();  
-    Provider.of<DrawerProvider>(context, listen: false).updateDrawerContent(drawerContent);
-  }
+  
 
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.black,
-      // drawer: selectedDrawer ?? const TradesDrawer(),
+      
       drawer: Consumer<DrawerProvider>(
         builder: (context, drawerProvider, child) {
           return drawerProvider.selectedDrawer; 
@@ -43,10 +34,15 @@ class TradeScreen extends StatelessWidget {
       ),
 
       body: Row(
-        children: [
-          // SidebarSection(onItemSelected: openDrawer), 
-          SidebarSection(onItemSelected:  (drawerContent) => openDrawer(context, drawerContent)), 
-
+        children: [ 
+          SidebarSection(
+            onItemSelected: (drawerContent) {
+       
+              Provider.of<DrawerProvider>(context, listen: false)
+                  .updateDrawerContent(drawerContent);
+              scaffoldKey.currentState?.openDrawer(); 
+            },
+          ),
           // const SidebarSection(),
           Expanded(
             child: Scaffold(
