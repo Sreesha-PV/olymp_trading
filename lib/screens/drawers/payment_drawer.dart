@@ -53,11 +53,7 @@ class PaymentDrawer extends StatelessWidget {
                     .updateSelectedIndex(0);
                     Scaffold.of(context).openDrawer();
                     Scaffold.hasDrawer(context);
-                  },
-                // onTap: () =>
-                //   onSelect(0), 
-                //   selected: selectedIndex == 0, 
-                  
+                  },                  
               ),
             ),
           ),
@@ -70,8 +66,7 @@ class PaymentDrawer extends StatelessWidget {
                 leading: Icon(Icons.wallet_rounded),
                 iconColor: Colors.white,
                 title: Text('Withdraw',style: TextStyle(color: Colors.white),),
-                // onTap: () => onSelect(0),
-                // selected: selectedIndex == 0,
+                
               ),
             ),
           ),
@@ -84,8 +79,7 @@ class PaymentDrawer extends StatelessWidget {
                 leading: Icon(CupertinoIcons.arrow_right_arrow_left),
                 iconColor: Colors.white,
                 title: Text('Transfer',style: TextStyle(color: Colors.white),),
-                // onTap: () => onSelect(0),
-                // selected: selectedIndex == 0,
+               
               ),
             ),
           ),
@@ -98,8 +92,7 @@ class PaymentDrawer extends StatelessWidget {
                 leading: Icon(Icons.history),
                 iconColor: Colors.white,
                 title: Text('Transaction',style: TextStyle(color: Colors.white),),
-                // onTap: () => onSelect(0),
-                // selected: selectedIndex == 0,
+                
               ),
             ),
           )
