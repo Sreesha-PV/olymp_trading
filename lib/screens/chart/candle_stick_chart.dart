@@ -136,87 +136,87 @@
 
 
 
-import 'dart:async';
-import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:olymp_trade/websocket/helper.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:candlesticks/candlesticks.dart';
+// import 'dart:async';
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:olymp_trade/websocket/helper.dart';
+// import 'package:web_socket_channel/web_socket_channel.dart';
+// import 'package:candlesticks/candlesticks.dart';
 
-class LiveCandlestickChart extends StatefulWidget {
-  @override
-  _LiveCandlestickChartState createState() => _LiveCandlestickChartState();
-}
+// class LiveCandlestickChart extends StatefulWidget {
+//   @override
+//   _LiveCandlestickChartState createState() => _LiveCandlestickChartState();
+// }
 
-class _LiveCandlestickChartState extends State<LiveCandlestickChart> {
-  late WebSocketChannel channel;
-  List<Candle> candles = [];
+// class _LiveCandlestickChartState extends State<LiveCandlestickChart> {
+//   late WebSocketChannel channel;
+//   List<Candle> candles = [];
 
-  @override
-  void initState() {
-    super.initState();
-    connectToWebSocket();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     connectToWebSocket();
+//   }
 
-  void connectToWebSocket() {
-    String socketUrl = 'wss://stream.binance.com:9443/ws/btcusdt@kline_1m'; // Use Binance WebSocket for testing
-    channel = WebSocketHelper.connect(socketUrl);
+//   void connectToWebSocket() {
+//     String socketUrl = 'wss://stream.binance.com:9443/ws/btcusdt@kline_1m'; // Use Binance WebSocket for testing
+//     channel = WebSocketHelper.connect(socketUrl);
 
-    channel.stream.listen((message) {
-      print("Received: $message"); // Debugging: Print incoming WebSocket data
-      var data = jsonDecode(message);
+//     channel.stream.listen((message) {
+//       print("Received: $message"); // Debugging: Print incoming WebSocket data
+//       var data = jsonDecode(message);
 
-      if (data.containsKey('k')) {
-        var kline = data['k'];
-        Candle newCandle = Candle(
-          date: DateTime.fromMillisecondsSinceEpoch(kline['t']),
-          open: double.parse(kline['o']),
-          high: double.parse(kline['h']),
-          low: double.parse(kline['l']),
-          close: double.parse(kline['c']),
-          volume: double.parse(kline['v']),
-        );
+//       if (data.containsKey('k')) {
+//         var kline = data['k'];
+//         Candle newCandle = Candle(
+//           date: DateTime.fromMillisecondsSinceEpoch(kline['t']),
+//           open: double.parse(kline['o']),
+//           high: double.parse(kline['h']),
+//           low: double.parse(kline['l']),
+//           close: double.parse(kline['c']),
+//           volume: double.parse(kline['v']),
+//         );
 
-        updateChartData(newCandle);
-      } else {
-        print("Invalid data format: $data"); // Debugging: Print unexpected data
-      }
-    }, onError: (error) {
-      print("WebSocket Error: $error");
-    }, onDone: () {
-      print("WebSocket Closed. Reconnecting...");
-      connectToWebSocket();
-    });
-  }
+//         updateChartData(newCandle);
+//       } else {
+//         print("Invalid data format: $data"); // Debugging: Print unexpected data
+//       }
+//     }, onError: (error) {
+//       print("WebSocket Error: $error");
+//     }, onDone: () {
+//       print("WebSocket Closed. Reconnecting...");
+//       connectToWebSocket();
+//     });
+//   }
 
-  void updateChartData(Candle newCandle) {
-    setState(() {
-      if (candles.isNotEmpty && candles.last.date == newCandle.date) {
-        candles[candles.length - 1] = newCandle;
-      } else {
-        candles.add(newCandle);
-        if (candles.length > 50) {
-          candles.removeAt(0);
-        }
-      }
-    });
-  }
+//   void updateChartData(Candle newCandle) {
+//     setState(() {
+//       if (candles.isNotEmpty && candles.last.date == newCandle.date) {
+//         candles[candles.length - 1] = newCandle;
+//       } else {
+//         candles.add(newCandle);
+//         if (candles.length > 50) {
+//           candles.removeAt(0);
+//         }
+//       }
+//     });
+//   }
 
 
 
-  @override
-  void dispose() {
-    channel.sink.close();
-    super.dispose();
-  }
+//   @override
+//   void dispose() {
+//     channel.sink.close();
+//     super.dispose();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Live Candlestick Chart')),
-      body: candles.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : Candlesticks(candles: candles),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text('Live Candlestick Chart')),
+//       body: candles.isEmpty
+//           ? Center(child: CircularProgressIndicator())
+//           : Candlesticks(candles: candles),
+//     );
+//   }
+// }

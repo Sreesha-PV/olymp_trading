@@ -1,7 +1,3 @@
-
-
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:olymp_trade/screens/chart/candle_stick_chart.dart';
@@ -9,7 +5,10 @@ import 'package:olymp_trade/screens/drawers/account_drawer.dart';
 import 'package:olymp_trade/screens/drawers/payment_drawer.dart';
 import 'package:olymp_trade/screens/provider/selected_account_notifier.dart';
 import 'package:olymp_trade/screens/sidebar/bottom_side.dart';
+import 'package:olymp_trade/websocket/websocket.dart';
 import 'package:provider/provider.dart';
+import 'chart/chart_repo.dart';
+import 'chart/chart_widget.dart';
 import 'provider/drawer_provider.dart';
 import 'provider/selected_index_provider.dart';
 import 'sidebar/rsidebar_section.dart';
@@ -39,7 +38,7 @@ class TradeScreen extends StatelessWidget {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          bool isMobile = constraints.maxWidth < 600; 
+          bool isMobile = constraints.maxWidth < 600;
           return Column(
             children: [
               Expanded(
@@ -47,7 +46,12 @@ class TradeScreen extends StatelessWidget {
                     ? Column(
                         children: [
                           const TopSection(),
-                          Expanded(child: LiveCandlestickChart()),
+                          Expanded(
+                            child: CandleChartWidget(
+                              repository: BinanceRepository(),
+                              initialThemeIsDark: false,
+                            ),
+                          ),
                           // Expanded(child: CandlestickChart()),
                           // Right Sidebar at Bottom (Mobile)
                           // RSidebarSection(),
@@ -58,7 +62,8 @@ class TradeScreen extends StatelessWidget {
                         children: [
                           SidebarSection(
                             onItemSelected: (drawerContent) {
-                              Provider.of<DrawerProvider>(context, listen: false)
+                              Provider.of<DrawerProvider>(context,
+                                      listen: false)
                                   .updateDrawerContent(drawerContent);
                               scaffoldKey.currentState?.openDrawer();
                             },
@@ -70,8 +75,12 @@ class TradeScreen extends StatelessWidget {
                                 Expanded(
                                   child: Row(
                                     children: [
-                                      Expanded(child: LiveCandlestickChart()),    
-                                      // Expanded(child: CandlestickChart()),                                
+                                      Expanded(
+                                          child: CandleChartWidget(
+                                        repository: BinanceRepository(),
+                                        initialThemeIsDark: false,
+                                      )),
+                                      // Expanded(child: CandlestickChart()),
                                       const RSidebarSection(),
                                     ],
                                   ),
@@ -127,13 +136,15 @@ class TopSection extends StatelessWidget {
         bool isMobile = constraints.maxWidth < 600; // Mobile condition
 
         return Padding(
-          padding: isMobile ? const EdgeInsets.all(8.0) : const EdgeInsets.all(16.0),
+          padding:
+              isMobile ? const EdgeInsets.all(8.0) : const EdgeInsets.all(16.0),
           child: Column(
             children: [
               // Top row for both Mobile and Web
               Row(
-                mainAxisAlignment:
-                    isMobile ? MainAxisAlignment.spaceBetween : MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: isMobile
+                    ? MainAxisAlignment.spaceBetween
+                    : MainAxisAlignment.spaceBetween,
                 children: [
                   // **Left Section (Mobile: Profile, Web: FAB + Halal Market Axis)**
                   if (!isMobile)
@@ -144,17 +155,23 @@ class TopSection extends StatelessWidget {
                           backgroundColor: Colors.grey[900],
                           child: const Icon(Icons.add),
                         ),
-                        const SizedBox(width: 10,),
+                        const SizedBox(
+                          width: 10,
+                        ),
                         Container(
                           height: 50,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: Colors.grey[900],
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Text(
                             "Halal Market Axis",
-                            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold),
                           ),
                         ),
                       ],
@@ -172,7 +189,8 @@ class TopSection extends StatelessWidget {
                   if (isMobile)
                     GestureDetector(
                       onTap: () {
-                        Provider.of<SelectedIndexNotifier>(context, listen: false)
+                        Provider.of<SelectedIndexNotifier>(context,
+                                listen: false)
                             .updateSelectedIndex(0);
                         Scaffold.of(context).openEndDrawer();
                       },
@@ -192,7 +210,8 @@ class TopSection extends StatelessWidget {
                                     return Text(
                                       accountNotifier.selectedAccount,
                                       style: const TextStyle(
-                                        color: Color.fromARGB(255, 163, 185, 179),
+                                        color:
+                                            Color.fromARGB(255, 163, 185, 179),
                                         fontSize: 12,
                                       ),
                                     );
@@ -201,7 +220,8 @@ class TopSection extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(width: 8),
-                            const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                            const Icon(Icons.keyboard_arrow_down,
+                                color: Colors.white),
                           ],
                         ),
                       ),
@@ -209,13 +229,15 @@ class TopSection extends StatelessWidget {
 
                   // **Right Section (Mobile: Wallet Icon, Web: AED + Wallet + Profile)**
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end, // Align to right for Web
+                    mainAxisAlignment:
+                        MainAxisAlignment.end, // Align to right for Web
                     children: [
-                      // AED Account 
+                      // AED Account
                       if (!isMobile)
                         GestureDetector(
                           onTap: () {
-                            Provider.of<SelectedIndexNotifier>(context, listen: false)
+                            Provider.of<SelectedIndexNotifier>(context,
+                                    listen: false)
                                 .updateSelectedIndex(0);
                             Scaffold.of(context).openEndDrawer();
                           },
@@ -231,11 +253,13 @@ class TopSection extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Consumer<SelectedAccountNotifier>(
-                                      builder: (context, accountNotifier, child) {
+                                      builder:
+                                          (context, accountNotifier, child) {
                                         return Text(
                                           accountNotifier.selectedAccount,
                                           style: const TextStyle(
-                                            color: Color.fromARGB(255, 163, 185, 179),
+                                            color: Color.fromARGB(
+                                                255, 163, 185, 179),
                                             fontSize: 12,
                                           ),
                                         );
@@ -244,7 +268,8 @@ class TopSection extends StatelessWidget {
                                   ],
                                 ),
                                 const SizedBox(width: 8),
-                                const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                                const Icon(Icons.keyboard_arrow_down,
+                                    color: Colors.white),
                               ],
                             ),
                           ),
@@ -254,12 +279,14 @@ class TopSection extends StatelessWidget {
                       // Wallet Icon (Payments)
                       GestureDetector(
                         onTap: () {
-                          Provider.of<SelectedIndexNotifier>(context, listen: false)
+                          Provider.of<SelectedIndexNotifier>(context,
+                                  listen: false)
                               .updateSelectedIndex(1);
                           Scaffold.of(context).openEndDrawer();
                         },
                         child: Container(
-                          width: isMobile ? 50 : 100, // Smaller width for mobile
+                          width:
+                              isMobile ? 50 : 100, // Smaller width for mobile
                           height: 50,
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
@@ -318,12 +345,18 @@ class TopSection extends StatelessWidget {
                       children: [
                         Text(
                           "Halal Market Axis",
-                          style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold),
                         ),
                         SizedBox(width: 8),
                         Text(
                           "FT - 85%",
-                          style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.green,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -336,10 +369,3 @@ class TopSection extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
