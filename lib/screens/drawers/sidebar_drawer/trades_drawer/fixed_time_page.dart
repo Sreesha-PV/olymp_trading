@@ -8,7 +8,7 @@ class FixedtimePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        backgroundColor: Colors.black,
+      backgroundColor: const Color.fromARGB(255, 24, 23, 23),
         child: ListView(padding: const EdgeInsets.only(left: 15), children: [
           const Row(
             children: [
@@ -72,7 +72,9 @@ class FixedtimePage extends StatelessWidget {
                       color: Colors.grey[800],
                     ),
                     child: TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          
+                        },
                         child: const Text(
                           'Explore Assets',
                           style: TextStyle(color: Colors.white),

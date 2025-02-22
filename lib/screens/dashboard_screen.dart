@@ -1,221 +1,346 @@
+
+
+
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/screens/drawers/sidebar_drawer/market_drawer.dart';
+import 'package:olymp_trade/screens/chart/candle_stick_chart.dart';
+import 'package:olymp_trade/screens/drawers/account_drawer.dart';
+import 'package:olymp_trade/screens/drawers/payment_drawer.dart';
+import 'package:olymp_trade/screens/provider/selected_account_notifier.dart';
+import 'package:olymp_trade/screens/sidebar/bottom_side.dart';
 import 'package:provider/provider.dart';
-import 'drawers/account_drawer.dart';
-import 'drawers/payment_drawer.dart';
-// import 'drawers/profile_drawer.dart';
-// import 'drawers/sidebar_drawer/events_drawer.dart';
-// import 'drawers/sidebar_drawer/trades_drawer.dart';
 import 'provider/drawer_provider.dart';
 import 'provider/selected_index_provider.dart';
 import 'sidebar/rsidebar_section.dart';
 import 'sidebar/sidebar_section.dart';
 
-
-
 class TradeScreen extends StatelessWidget {
-  TradeScreen({super.key});
+  final String balance;
+  final String accountType;
+
+  TradeScreen({
+    super.key,
+    this.balance = "AED 0.00",
+    this.accountType = "AED Account",
+  });
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    Widget? selectedDrawer; 
-
-    // void openDrawer(Widget drawerContent) {
-    //   selectedDrawer = drawerContent;
-    //   scaffoldKey.currentState?.openDrawer(); 
-    // }
-
-    void openDrawer(BuildContext context, Widget drawerContent) {
-    Scaffold.of(context).openDrawer();  
-    Provider.of<DrawerProvider>(context, listen: false).updateDrawerContent(drawerContent);
-  }
-
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: Colors.black,
-      // drawer: selectedDrawer ?? const TradesDrawer(),
       drawer: Consumer<DrawerProvider>(
         builder: (context, drawerProvider, child) {
-          return drawerProvider.selectedDrawer; 
+          return drawerProvider.selectedDrawer;
         },
       ),
-
-      body: Row(
-        children: [
-          // SidebarSection(onItemSelected: openDrawer), 
-          SidebarSection(onItemSelected:  (drawerContent) => openDrawer(context, drawerContent)), 
-
-          // const SidebarSection(),
-          Expanded(
-            child: Scaffold(
-              backgroundColor: Colors.black,
-              body: Column(
-                children: [
-                  const TopSection(),
-                  Expanded(child: RSidebarSection()),
-                ],
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          bool isMobile = constraints.maxWidth < 600; 
+          return Column(
+            children: [
+              Expanded(
+                child: isMobile
+                    ? Column(
+                        children: [
+                          const TopSection(),
+                          Expanded(child: LiveCandlestickChart()),
+                          // Expanded(child: CandlestickChart()),
+                          // Right Sidebar at Bottom (Mobile)
+                          // RSidebarSection(),
+                          const TradeBottomSection()
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          SidebarSection(
+                            onItemSelected: (drawerContent) {
+                              Provider.of<DrawerProvider>(context, listen: false)
+                                  .updateDrawerContent(drawerContent);
+                              scaffoldKey.currentState?.openDrawer();
+                            },
+                          ),
+                          Expanded(
+                            child: Column(
+                              children: [
+                                const TopSection(),
+                                Expanded(
+                                  child: Row(
+                                    children: [
+                                      Expanded(child: LiveCandlestickChart()),    
+                                      // Expanded(child: CandlestickChart()),                                
+                                      const RSidebarSection(),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
               ),
-              endDrawer: Consumer<SelectedIndexNotifier>(
-                builder: (context, selectedIndexNotifier, child) {
-                  return selectedIndexNotifier.selectedIndex == 0
-                      ? AccountDrawer(
-                        
-                          selectedIndex: selectedIndexNotifier.selectedIndex,
-                          onSelect: (index) {
-                            selectedIndexNotifier.updateSelectedIndex(index);
-                          },
-                        )
-                      : PaymentDrawer(
-                          selectedIndex: selectedIndexNotifier.selectedIndex,
-                          onSelect: (index) {
-                            selectedIndexNotifier.updateSelectedIndex(index);
-                          },
-                        );
-                      
-                      
-                     
-                },
-              ),
-            ),
-          ),
-        ],
+
+              // Sidebar at Bottom for Mobile
+              if (isMobile)
+                SidebarSection(
+                  onItemSelected: (drawerContent) {
+                    Provider.of<DrawerProvider>(context, listen: false)
+                        .updateDrawerContent(drawerContent);
+                    scaffoldKey.currentState?.openDrawer();
+                  },
+                ),
+            ],
+          );
+        },
+      ),
+      endDrawer: Consumer<SelectedIndexNotifier>(
+        builder: (context, selectedIndexNotifier, child) {
+          return selectedIndexNotifier.selectedIndex == 0
+              ? AccountDrawer(
+                  selectedIndex: selectedIndexNotifier.selectedIndex,
+                  onSelect: (index) {
+                    selectedIndexNotifier.updateSelectedIndex(index);
+                  },
+                )
+              : PaymentDrawer(
+                  selectedIndex: selectedIndexNotifier.selectedIndex,
+                  onSelect: (index) {
+                    selectedIndexNotifier.updateSelectedIndex(index);
+                  },
+                );
+        },
       ),
     );
   }
 }
-
 
 class TopSection extends StatelessWidget {
   const TopSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              FloatingActionButton(
-                backgroundColor: Colors.grey[800],
-                onPressed: () {},
-                child: const Icon(Icons.add, color: Colors.white),
-              ),
-              const SizedBox(width: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Halal Market Axis",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold)),
-                    Text("FT - 85%",
-                        style: TextStyle(color: Colors.green, fontSize: 12)),
-                  ],
-                ),
-              ),
-            ],
-          ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isMobile = constraints.maxWidth < 600; // Mobile condition
 
-          Row(
+        return Padding(
+          padding: isMobile ? const EdgeInsets.all(8.0) : const EdgeInsets.all(16.0),
+          child: Column(
             children: [
-              
-              GestureDetector(
-                onTap: () {
-                  Provider.of<SelectedIndexNotifier>(context, listen: false)
-                      .updateSelectedIndex(0); 
-                  Scaffold.of(context).openEndDrawer(); 
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.grey[850],
-                  ),
-                  child: Row(
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            "AED 0.00",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold),
+              // Top row for both Mobile and Web
+              Row(
+                mainAxisAlignment:
+                    isMobile ? MainAxisAlignment.spaceBetween : MainAxisAlignment.spaceBetween,
+                children: [
+                  // **Left Section (Mobile: Profile, Web: FAB + Halal Market Axis)**
+                  if (!isMobile)
+                    Row(
+                      children: [
+                        FloatingActionButton(
+                          onPressed: () {},
+                          backgroundColor: Colors.grey[900],
+                          child: const Icon(Icons.add),
+                        ),
+                        const SizedBox(width: 10,),
+                        Container(
+                          height: 50,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[900],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          Text(
-                            "AED Account",
-                            style: TextStyle(
-                                color: Colors.grey[400], fontSize: 12),
+                          child: const Text(
+                            "Halal Market Axis",
+                            style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                           ),
-                        ],
+                        ),
+                      ],
+                    )
+                  else
+                    // Mobile: Profile Icon on Left
+                    CircleAvatar(
+                      backgroundColor: Colors.grey[850],
+                      foregroundColor: Colors.white,
+                      radius: 25,
+                      child: const Icon(CupertinoIcons.person),
+                    ),
+
+                  // **Center Section (Mobile: AED Account, Web: Empty)**
+                  if (isMobile)
+                    GestureDetector(
+                      onTap: () {
+                        Provider.of<SelectedIndexNotifier>(context, listen: false)
+                            .updateSelectedIndex(0);
+                        Scaffold.of(context).openEndDrawer();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.black,
+                        ),
+                        child: Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Consumer<SelectedAccountNotifier>(
+                                  builder: (context, accountNotifier, child) {
+                                    return Text(
+                                      accountNotifier.selectedAccount,
+                                      style: const TextStyle(
+                                        color: Color.fromARGB(255, 163, 185, 179),
+                                        fontSize: 12,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 8), 
-                      const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
+                    ),
 
-              // Payment Button (Opens Right Drawer for Payment)
-              GestureDetector(
-                onTap: () {
-                  Provider.of<SelectedIndexNotifier>(context, listen: false)
-                      .updateSelectedIndex(1); 
-                  Scaffold.of(context).openEndDrawer(); 
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(colors: [
-                      Color.fromARGB(255, 50, 129, 52),
-                      Colors.green,
-                      Colors.greenAccent
-                    ]),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
+                  // **Right Section (Mobile: Wallet Icon, Web: AED + Wallet + Profile)**
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end, // Align to right for Web
                     children: [
-                      Text(
-                        "Payment",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold),
-                      ),  
-                      SizedBox(width: 8),
-                      Icon(Icons.keyboard_arrow_down, color: Colors.black),
+                      // AED Account 
+                      if (!isMobile)
+                        GestureDetector(
+                          onTap: () {
+                            Provider.of<SelectedIndexNotifier>(context, listen: false)
+                                .updateSelectedIndex(0);
+                            Scaffold.of(context).openEndDrawer();
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: Colors.black,
+                            ),
+                            child: Row(
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Consumer<SelectedAccountNotifier>(
+                                      builder: (context, accountNotifier, child) {
+                                        return Text(
+                                          accountNotifier.selectedAccount,
+                                          style: const TextStyle(
+                                            color: Color.fromARGB(255, 163, 185, 179),
+                                            fontSize: 12,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(Icons.keyboard_arrow_down, color: Colors.white),
+                              ],
+                            ),
+                          ),
+                        ),
+                      const SizedBox(width: 10),
+
+                      // Wallet Icon (Payments)
+                      GestureDetector(
+                        onTap: () {
+                          Provider.of<SelectedIndexNotifier>(context, listen: false)
+                              .updateSelectedIndex(1);
+                          Scaffold.of(context).openEndDrawer();
+                        },
+                        child: Container(
+                          width: isMobile ? 50 : 100, // Smaller width for mobile
+                          height: 50,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(colors: [
+                              Color.fromARGB(255, 76, 238, 238),
+                              Color.fromARGB(255, 74, 231, 43)
+                            ]),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: isMobile
+                              ? const Icon(
+                                  Icons.wallet,
+                                  color: Colors.black,
+                                )
+                              : const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Payments",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+
+                      // Profile Icon (Only for Web, at the Right End)
+                      if (!isMobile)
+                        CircleAvatar(
+                          backgroundColor: Colors.grey[850],
+                          foregroundColor: Colors.white,
+                          radius: 25,
+                          child: const Icon(CupertinoIcons.person),
+                        ),
                     ],
                   ),
-                ),
+                ],
               ),
-              const SizedBox(width: 8),
 
-              CircleAvatar(
-                backgroundColor: Colors.grey[850],
-                foregroundColor: Colors.white,
-                radius: 25,
-                child: const Icon(Icons.person_2_outlined),
-              ),
+              // **Mobile Only: Halal Market Axis & FT - 85%**
+              if (isMobile)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Halal Market Axis",
+                          style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "FT - 85%",
+                          style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
+
+
+
+
+
 
 
 

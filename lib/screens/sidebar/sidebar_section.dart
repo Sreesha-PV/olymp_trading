@@ -1,14 +1,10 @@
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../drawers/sidebar_drawer/events_drawer.dart';
-import '../drawers/sidebar_drawer/help_drawer.dart';
-
-
-import '../drawers/sidebar_drawer/market_drawer.dart';
-// import '../drawers/sidebar_drawer/market_drawer/drawer_screen.dart';
-import '../drawers/sidebar_drawer/trades_drawer.dart';
-
-
+import 'package:olymp_trade/screens/drawers/sidebar_drawer/events_drawer.dart';
+import 'package:olymp_trade/screens/drawers/sidebar_drawer/help_drawer.dart';
+import 'package:olymp_trade/screens/drawers/sidebar_drawer/market_drawer.dart';
+import 'package:olymp_trade/screens/drawers/sidebar_drawer/trades_drawer.dart';
 
 class SidebarSection extends StatelessWidget {
   final Function(Widget) onItemSelected;
@@ -17,19 +13,130 @@ class SidebarSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isMobile = MediaQuery.of(context).size.width < 600;
+    return isMobile ? buildBottomSidebar(context) : buildVerticalSidebar();
+  }
+
+  /// **Web Sidebar (Vertical)**
+  Widget buildVerticalSidebar() {
+    final List<Map<String, dynamic>> items = [
+      {
+        "icon": CupertinoIcons.arrow_down_right_arrow_up_left,
+        "label": "Trades",
+        "drawer": const TradesDrawer(),
+      },
+      {
+        "icon": Icons.shopping_bag_outlined,
+        "label": "Market",
+        "drawer": const MarketDrawer(),
+      },
+      {
+        "icon": Icons.emoji_events_outlined,
+        "label": "Events",
+        "drawer": const EventsDrawer(),
+      },
+      {
+        "icon": Icons.help_outline,
+        "label": "Help",
+        "drawer": const HelpDrawer(),
+      },
+    ];
+
     return Container(
       width: 80,
-      color: Colors.grey[900],
+      color: const Color.fromARGB(246, 17, 17, 17),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          SidebarItem(icon: Icons.show_chart, label: "Trades", onTap: () => onItemSelected(const TradesDrawer())),
-          SidebarItem(icon: Icons.shopping_bag_outlined, label: "Market", onTap: () => onItemSelected(const MarketDrawer())),
-          SidebarItem(icon: Icons.emoji_events_outlined, label: "Events", onTap: () => onItemSelected(const EventsDrawer())),
-          SidebarItem(icon: Icons.help_outline, label: "Help", onTap: () => onItemSelected(const HelpDrawer())),
+          const SizedBox(height: 90),
+          ...items.map((item) {
+            return Padding(
+              padding: const EdgeInsets.only(top: 40),
+              child: SidebarItem(
+                icon: item['icon'],
+                label: item['label'],
+                onTap: () => onItemSelected(item['drawer']),
+              ),
+            );
+          }).toList(),
         ],
       ),
     );
+  }
+
+  /// **Mobile Sidebar (Bottom)**
+  Widget buildBottomSidebar(BuildContext context) {
+    final List<Map<String, dynamic>> items = [
+      {
+        "icon": CupertinoIcons.arrow_down_right_arrow_up_left,
+        "label": "Trades",
+        "index": 0,
+      },
+      {
+        "icon": Icons.shopping_bag_outlined,
+        "label": "Market",
+        "index": 1,
+      },
+      {
+        "icon": Icons.emoji_events_outlined,
+        "label": "Events",
+        "index": 2,
+      },
+      {
+        "icon": Icons.help_outline,
+        "label": "Help",
+        "index": 3,
+      },
+    ];
+
+    return Container(
+      height: 70,
+      color: const Color.fromARGB(246, 17, 17, 17),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: items.map((item) {
+          return SidebarItem(
+            icon: item['icon'],
+            label: item['label'],
+            onTap: () => openBottomDrawer(context, item['index']),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  void openBottomDrawer(BuildContext context, int index) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) {
+        return Container(
+          width: double.infinity,
+          color: const Color.fromARGB(255, 24, 23, 23),
+          child: Column(
+            children: [
+              Expanded(child: getDrawerContent(index)),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget getDrawerContent(int index) {
+    switch (index) {
+      case 0:
+        return const TradesDrawer();
+      case 1:
+        return const MarketDrawer();
+      case 2:
+        return const EventsDrawer();
+      case 3:
+        return const HelpDrawer();
+      default:
+        return Container();
+    }
   }
 }
 
@@ -42,22 +149,18 @@ class SidebarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Icon(icon, color: Colors.grey[350], size: 26),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(color: Colors.grey[350], fontSize: 12),
-            ),
-          ],
-        ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: const Color.fromARGB(255, 163, 185, 179), size: 24),
+          Text(
+            label,
+            style: const TextStyle(color: Color.fromARGB(255, 163, 185, 179), fontSize: 12),
+          ),
+        ],
       ),
     );
   }
 }
-
