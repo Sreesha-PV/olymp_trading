@@ -27,7 +27,7 @@ class EnableOrder extends StatelessWidget {
                   const Padding(
                     padding: EdgeInsets.only(top: 10, left: 16),
                     child: Align(
-                      alignment: Alignment.centerLeft,
+                      alignment: Alignment.centerLeft, 
                       child: Text(
                         'Order Details',
                         style: TextStyle(
