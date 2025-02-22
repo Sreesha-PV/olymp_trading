@@ -263,7 +263,7 @@ class RSidebarSection extends StatelessWidget {
                   ],
                 ),
               ),
-                // Add more widgets here...
+              
 
               ],
             ),
