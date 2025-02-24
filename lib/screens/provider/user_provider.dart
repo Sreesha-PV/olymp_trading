@@ -1,22 +1,17 @@
-
-
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/model/user_balance_model.dart';
 
+class UserProvider extends ChangeNotifier {
+  String? _loggedInUsername;
 
-
-class UserProvider with ChangeNotifier {
-  User? _loggedInUser;
-
-  User? get loggedInUser => _loggedInUser;
+  String? get loggedInUsername => _loggedInUsername;
 
   void login(String username, String password) {
-    _loggedInUser = mockUsers.firstWhere((user) => user.username == username);
+    _loggedInUsername = username;
     notifyListeners();
   }
 
-  // void logout() {
-  //   _loggedInUser = null;
-  //   notifyListeners();
-  // }
+  void logout() {
+    _loggedInUsername = null;
+    notifyListeners();
+  }
 }
