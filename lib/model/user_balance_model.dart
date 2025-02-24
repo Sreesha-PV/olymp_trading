@@ -7,7 +7,7 @@ class User {
 }
 
 final List<User> mockUsers = [
-  User(username: "admin", balance: "AED 5,000.00", accountType: "AED Account"),
-  User(username: "user1", balance: "USD 2,500.00", accountType: "USDT Account"),
-  User(username: "user2", balance: "EUR 3,000.00", accountType: "EUR Account"),
+  User(username: "user_101", balance: "AED 5,000.00", accountType: "AED Account"),
+  User(username: "user_102", balance: "USD 2,500.00", accountType: "USDT Account"),
+  User(username: "user_103", balance: "EUR 3,000.00", accountType: "EUR Account"),
 ];
