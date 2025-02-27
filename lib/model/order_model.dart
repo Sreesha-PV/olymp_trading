@@ -1,7 +1,7 @@
- 
+
 class Order {
   final String label;
-  final String direction; // "Up" or "Down"
+  final String direction; 
   final double amount;
   final String time;
 
@@ -12,3 +12,4 @@ class Order {
     required this.time,
   });
 }
+
