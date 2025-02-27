@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/screens/dashboard_screen.dart';
+import 'package:olymp_trade/features/authentication/registration.dart';
+import 'package:olymp_trade/features/trading/trade_screen.dart';
 import 'package:provider/provider.dart';
-import '../screens/provider/user_provider.dart';
+import 'authentication_service.dart'; 
 
 
 class LoginScreen extends StatelessWidget {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final _formKey=GlobalKey<FormState>();
-  final String correctPassword = "password123";
+  final _formKey = GlobalKey<FormState>();
 
-  
-
-  LoginScreen({super.key});  
+  LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       backgroundColor: Colors.white,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Login'),
@@ -47,6 +45,7 @@ class LoginScreen extends StatelessWidget {
                 controller: passwordController,
                 hintText: 'Password',
                 obscureText: true,
+                 
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a password';
@@ -54,47 +53,52 @@ class LoginScreen extends StatelessWidget {
                   return null;
                 },
               ),
-            const SizedBox(height: 16),  
-            ElevatedButton(
-              onPressed: () {
-                final username = usernameController.text;
-                final password = passwordController.text;
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  final username = usernameController.text;
+                  final password = passwordController.text;
 
-                if (password == correctPassword) {
-                  
-                  Provider.of<UserProvider>(context, listen: false)
-                      .login(username, password);
-               
-                
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>TradeScreen()));
-                } else {
-                 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text("Incorrect password")),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(50,50),
-                backgroundColor: Colors.green,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12))
+                  final authService = Provider.of<AuthService>(context, listen: false);
+
+                  bool success = authService.login(username, password);
+
+                  if (success) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => TradeScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Incorrect username or password")),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(50, 50),
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text(
+                  "Login",
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ),
-              child: const Text("Login",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold
-              ),),
-            ),
-          ],
+              const SizedBox(height: 10,),
+              TextButton(onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>RegistrationScreen()));
+              }, 
+              child: const Text("Don't have an account?Register here",
+                style: TextStyle(color: Colors.black,fontSize: 14),
+              ))
+            ],
+          ),
         ),
       ),
-    )
     );
   }
-
-  
 
   Widget _buildTextField(
     BuildContext context, {
