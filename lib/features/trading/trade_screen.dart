@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import 'package:olymp_trade/features/chart/chart_repo.dart';
 import 'package:olymp_trade/features/chart/chart_widget.dart';
-import 'package:olymp_trade/features/drawer/account_drawer.dart';
-import 'package:olymp_trade/features/drawer/payment_drawer.dart';
+import 'package:olymp_trade/features/drawers/account_drawer.dart';
+import 'package:olymp_trade/features/drawers/payment_drawer.dart';
+import 'package:olymp_trade/features/drawers/profile_drawer.dart';
 import 'package:olymp_trade/features/provider/drawer_provider.dart';
 import 'package:olymp_trade/features/provider/selected_index_provider.dart';
 import 'package:olymp_trade/features/sections/bottom_section.dart';
@@ -10,8 +12,6 @@ import 'package:olymp_trade/features/sections/top_section.dart';
 import 'package:olymp_trade/features/sidebar/right_sidebar_section.dart';
 import 'package:olymp_trade/features/sidebar/sidebar_section.dart';
 import 'package:provider/provider.dart';
-
-
 
 class TradeScreen extends StatelessWidget {
   final String balance;
@@ -118,21 +118,43 @@ class TradeScreen extends StatelessWidget {
   }
 
   Widget _buildEndDrawer() {
-    return Consumer<SelectedIndexNotifier>(
+    return Consumer<SelectedIndexNotifier>(  
       builder: (context, selectedIndexNotifier, child) {
-        return selectedIndexNotifier.selectedIndex == 0
-            ? AccountDrawer(
-                selectedIndex: selectedIndexNotifier.selectedIndex,
-                onSelect: (index) {
-                  selectedIndexNotifier.updateSelectedIndex(index);
-                },
-              )
-            : PaymentDrawer(
-                selectedIndex: selectedIndexNotifier.selectedIndex,
-                onSelect: (index) {
-                  selectedIndexNotifier.updateSelectedIndex(index);
-                });
+        switch (selectedIndexNotifier.selectedIndex) {
+          case 0:
+            return AccountDrawer(
+              selectedIndex: selectedIndexNotifier.selectedIndex,
+              onSelect: (index) {
+                selectedIndexNotifier.updateSelectedIndex(index);
+              },
+            );
+          case 1:
+            return PaymentDrawer(
+              selectedIndex: selectedIndexNotifier.selectedIndex,
+              onSelect: (index) {
+                selectedIndexNotifier.updateSelectedIndex(index);
+              },
+            );
+          case 2: 
+            return ProfileDrawer(
+              selectedIndex: selectedIndexNotifier.selectedIndex,
+              onSelect: (index) {
+                selectedIndexNotifier.updateSelectedIndex(index);
+              },
+            );
+          default:
+            return AccountDrawer(
+              selectedIndex: selectedIndexNotifier.selectedIndex,
+              onSelect: (index) {
+                selectedIndexNotifier.updateSelectedIndex(index);
+              },
+            );
+        }
       },
     );
   }
+  
+
+
+
 }
