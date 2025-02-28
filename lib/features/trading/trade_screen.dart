@@ -4,7 +4,6 @@ import 'package:olymp_trade/features/chart/chart_repo.dart';
 import 'package:olymp_trade/features/chart/chart_widget.dart';
 import 'package:olymp_trade/features/drawers/account_drawer.dart';
 import 'package:olymp_trade/features/drawers/payment_drawer.dart';
-import 'package:olymp_trade/features/drawers/profile_drawer.dart';
 import 'package:olymp_trade/features/provider/drawer_provider.dart';
 import 'package:olymp_trade/features/provider/selected_index_provider.dart';
 import 'package:olymp_trade/features/sections/bottom_section.dart';
@@ -12,6 +11,9 @@ import 'package:olymp_trade/features/sections/top_section.dart';
 import 'package:olymp_trade/features/sidebar/right_sidebar_section.dart';
 import 'package:olymp_trade/features/sidebar/sidebar_section.dart';
 import 'package:provider/provider.dart';
+
+import '../authentication/authentication_service.dart';
+import '../drawers/profile_drawer.dart';
 
 class TradeScreen extends StatelessWidget {
   final String balance;
@@ -51,13 +53,12 @@ class TradeScreen extends StatelessWidget {
   }
 
   Widget _buildDrawer() {
-    return Consumer<DrawerProvider>(
+    return Consumer<DrawerProvider>(  
       builder: (context, drawerProvider, child) {
         return drawerProvider.selectedDrawer;
       },
     );
   }
-
   Widget _buildMobileLayout(BuildContext context) {
     return Column(
       children: [
@@ -116,7 +117,6 @@ class TradeScreen extends StatelessWidget {
       },
     );
   }
-
   Widget _buildEndDrawer() {
     return Consumer<SelectedIndexNotifier>(  
       builder: (context, selectedIndexNotifier, child) {
@@ -135,12 +135,16 @@ class TradeScreen extends StatelessWidget {
                 selectedIndexNotifier.updateSelectedIndex(index);
               },
             );
-          case 2: 
+          case 2:
+           
+            String email = Provider.of<AuthProvider>(context, listen: false).registeredEmail ?? 'No email available';
+
             return ProfileDrawer(
               selectedIndex: selectedIndexNotifier.selectedIndex,
               onSelect: (index) {
                 selectedIndexNotifier.updateSelectedIndex(index);
               },
+              email: email, 
             );
           default:
             return AccountDrawer(
@@ -153,8 +157,4 @@ class TradeScreen extends StatelessWidget {
       },
     );
   }
-  
-
-
-
 }
