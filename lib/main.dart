@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => ActiveOrderProvider()),
       ChangeNotifierProvider(create: (_) => EnableOrderProvider()),
       ChangeNotifierProvider(create: (_) => ProfitabilityProvider()),
-      // ChangeNotifierProvider(create: (_)=>AuthService()),
+      ChangeNotifierProvider(create: (_)=>AuthProvider()),
       ChangeNotifierProvider(create: (_)=>TransactionHistoryProvider()),
       ChangeNotifierProvider(create: (_) => AccountProvider()),
       ChangeNotifierProvider(create: (_) => SelectedAccountNotifier()),
