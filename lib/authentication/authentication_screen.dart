@@ -60,7 +60,8 @@ class AuthScreen extends StatelessWidget {
       child: Row(
         children: [
           _buildToggleButton("Login", true, authProvider),
-          _buildToggleButton("Register", false, authProvider),
+          _buildToggleButton("Register", false, authProvider)
+     
         ],
       ),
     );
@@ -99,7 +100,6 @@ class AuthScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildForm(AuthProvider authProvider, BuildContext context) {
     return Column(
       children: [
@@ -112,7 +112,7 @@ class AuthScreen extends StatelessWidget {
         _buildSubmitButton(authProvider, context),
         const SizedBox(height: 15),
         if (authProvider.isLoggedIn) ...[
-          _buildForgotPasswordLink(),
+          _buildForgotPasswordLink(context),
           _buildSocialAuthButtons(),
         ] else ...[
           _buildSocialAuthButtons(),
@@ -125,6 +125,7 @@ class AuthScreen extends StatelessWidget {
 
   Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false, bool isEmail = false}) {
     return TextFormField(
+      
       controller: controller,
       obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
@@ -132,15 +133,26 @@ class AuthScreen extends StatelessWidget {
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey[400]),
         filled: true,
-        fillColor: Colors.grey[850],
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: Colors.grey[800]!),
-        ),
+      fillColor: Colors.grey[850],
+      
+      
+    enabledBorder: OutlineInputBorder(
+      borderRadius: const BorderRadius.all(Radius.circular(10)),
+      borderSide: BorderSide(color: Colors.grey[800]!,width: 2 ),
+    ),
+    focusedBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      borderSide: BorderSide(color: Colors.green,width: 2 ),
+    ),
+    errorBorder: const OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      borderSide: BorderSide(color: Colors.red,width: 2),
+    ),
+    
         suffixIcon: obscureText
             ? const Icon(Icons.visibility_off_outlined, color: Colors.white)
             : null,
-      ),
+          ),
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter $hintText';
@@ -158,6 +170,7 @@ class AuthScreen extends StatelessWidget {
       },
     );
   }
+
 
   Widget _buildRememberMeCheckBox(AuthProvider authProvider) {
     return Row(
@@ -232,12 +245,12 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildForgotPasswordLink() {
+  Widget _buildForgotPasswordLink(context) {
     return Align(
       alignment: Alignment.center,
       child: GestureDetector(
         onTap: () {
-          // Handle forgot password functionality
+         
         },
         child: const Text(
           'Forgot your Password?',
@@ -265,20 +278,27 @@ class AuthScreen extends StatelessWidget {
             const SizedBox(width: 20),
             _socialIconButton(icon: Icons.facebook, color: Colors.blue, onPressed: () {}),
             const SizedBox(width: 20),
-            _socialIconButton(icon: Icons.g_mobiledata_rounded, color: Colors.blue, onPressed: () {}),
+            _socialIconButton(
+              icon: Icons.g_mobiledata_outlined,
+              color: Colors.blue, 
+              onPressed: () {},),
           ],
         ),
       ],
     );
   }
 
-  Widget _socialIconButton({required IconData icon, required Color color, required VoidCallback onPressed}) {
+  Widget _socialIconButton({
+    required IconData icon, 
+    required Color color,
+    required VoidCallback onPressed,}) {
     return GestureDetector(
       onTap: onPressed,
       child: CircleAvatar(
         radius: 30,
         backgroundColor: Colors.white,
-        child: Icon(
+        child: 
+        Icon(
           icon,
           color: color,
           size: 30,
@@ -307,4 +327,7 @@ class AuthScreen extends StatelessWidget {
   void _showMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
+
 }
+
+
