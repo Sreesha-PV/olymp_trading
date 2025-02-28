@@ -123,11 +123,18 @@ class TopSection extends StatelessWidget {
         _buildWalletIcon(context, isMobile),
         const SizedBox(width: 10),
         if (!isMobile)
-          CircleAvatar(
-            backgroundColor: Colors.grey[850],
-            foregroundColor: Colors.white,
-            radius: 25,
-            child: const Icon(CupertinoIcons.person),
+          GestureDetector(
+            onTap: (){
+              Provider.of<SelectedIndexNotifier>(context, listen: false)
+              .updateSelectedIndex(2);
+          Scaffold.of(context).openEndDrawer();
+            },
+            child: CircleAvatar(
+              backgroundColor: Colors.grey[850],
+              foregroundColor: Colors.white,
+              radius: 25,
+              child: const Icon(CupertinoIcons.person),
+            ),
           ),
       ],
     );
