@@ -37,12 +37,19 @@ class TopSection extends StatelessWidget {
 
   Widget _buildLeftSection(bool isMobile, BuildContext context) {
     return isMobile
-        ? CircleAvatar(
-            backgroundColor: Colors.grey[850],
-            foregroundColor: Colors.white,
-            radius: 25,
-            child: const Icon(CupertinoIcons.person),
-          )
+        ? GestureDetector(
+           onTap: (){
+             Provider.of<SelectedIndexNotifier>(context, listen: false)
+              .updateSelectedIndex(2);
+          Scaffold.of(context).openEndDrawer();
+           },
+          child: CircleAvatar(
+              backgroundColor: Colors.grey[850],
+              foregroundColor: Colors.white,
+              radius: 25,
+              child: const Icon(CupertinoIcons.person),
+            ),
+        )
         : Row(
             children: [
               FloatingActionButton(
