@@ -1,4 +1,7 @@
+
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/features/provider/tradesettings_provider.dart';
+import 'package:provider/provider.dart';
 
 class SymbolsSearchModal extends StatefulWidget {
   const SymbolsSearchModal({
@@ -16,16 +19,18 @@ class SymbolsSearchModal extends StatefulWidget {
 
 class _SymbolSearchModalState extends State<SymbolsSearchModal> {
   String symbolSearch = "";
+
   @override
   Widget build(BuildContext context) {
+    
+
     return Center(
       child: Material(
         color: Colors.transparent,
         child: Container(
           width: 300,
           height: MediaQuery.of(context).size.height * 0.75,
-          color:
-              Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
+          color: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.5),
           child: Column(
             children: [
               Padding(
@@ -41,9 +46,7 @@ class _SymbolSearchModalState extends State<SymbolsSearchModal> {
               Expanded(
                 child: ListView(
                   children: widget.symbols
-                      .where((element) => element
-                          .toLowerCase()
-                          .contains(symbolSearch.toLowerCase()))
+                      .where((element) => element.toLowerCase().contains(symbolSearch.toLowerCase()))
                       .map((e) => Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: SizedBox(
@@ -53,6 +56,8 @@ class _SymbolSearchModalState extends State<SymbolsSearchModal> {
                                 elevation: 0,
                                 fillColor: const Color(0xFF494537),
                                 onPressed: () {
+                                  final tradeSettings=Provider.of<TradeSettingsProvider>(context,listen:false);
+                                  tradeSettings.setSymbols(e);
                                   widget.onSelect(e);
                                   Navigator.of(context).pop();
                                 },
@@ -91,19 +96,19 @@ class CustomTextField extends StatelessWidget {
           color: Color(0xFF494537),
         ),
         enabledBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
+          borderSide: BorderSide(width: 3, color: Color(0xFF494537)),
         ),
         border: OutlineInputBorder(
-          borderSide:
-              BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
+          borderSide: BorderSide(width: 3, color: Color(0xFF494537)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(width: 3, color: Color(0xFF494537)), //<-- SEE HER
+          borderSide: BorderSide(width: 3, color: Color(0xFF494537)),
         ),
       ),
       onChanged: onChanged,
     );
   }
 }
+
+
+
