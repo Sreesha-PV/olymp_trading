@@ -1,10 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/features/dialog/insufficient_fund_dialogg.dart';
-import 'package:olymp_trade/features/model/order_model.dart';
-import 'package:olymp_trade/features/provider/active_order_provider.dart';
-import 'package:olymp_trade/features/provider/trade_settings_provider.dart';
+import 'package:olymp_trade/features/model/order_creation_request.dart';
+import 'package:olymp_trade/features/provider/orderrequest_provider.dart';
+import 'package:olymp_trade/features/provider/tradesettings_provider.dart';
 import 'package:provider/provider.dart';
+
+
 
 class TradeBottomSection extends StatelessWidget {
   const TradeBottomSection({super.key});
@@ -29,13 +30,21 @@ class TradeBottomSection extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              _orderButton("Down", const Color.fromARGB(255, 228, 73, 86), CupertinoIcons.arrow_down, context),
+              OrderButton(label: "Down", color: const Color.fromARGB(255, 228, 73, 86), icon: CupertinoIcons.arrow_down,onTap: (){
+                print("down button clicked");
+
+                createOrder(0, context);
+
+              },),
               const SizedBox(width: 5),
               _iconButton(context, Icons.watch_later_outlined),
               const SizedBox(width: 10),
-              _orderButton("Up", const Color.fromARGB(255, 34, 175, 93), CupertinoIcons.arrow_up,context),
-            ],
-          ),
+              OrderButton(label: "Up", color: const Color.fromARGB(255, 34, 175, 93), icon: CupertinoIcons.arrow_up,onTap: () {
+                print("up button clicked");
+                    createOrder(1, context);
+              },),
+            ]
+          )
         ],
       ),
     );
@@ -90,7 +99,7 @@ class TradeBottomSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 5),
-          // Replace the text with TextField for input
+         
           SizedBox(
             width: 60,
             child: Padding(
@@ -135,7 +144,7 @@ class TradeBottomSection extends StatelessWidget {
     );
   }
 
-  Widget _fixedAmountInputField(String label, BuildContext context) {
+  Widget _fixedAmountInputField(String label, BuildContext context,) {
     final tradeSettings = Provider.of<TradeSettingsProvider>(context);
     double screenHeight=MediaQuery.of(context).size.height;
 
@@ -169,7 +178,7 @@ class TradeBottomSection extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 5),
-          // Replace the text with TextField for input
+         
           SizedBox(
             width: 60,
             child: Padding(
@@ -181,7 +190,7 @@ class TradeBottomSection extends StatelessWidget {
                
                onChanged: (value) {
                double parsedAmount = double.tryParse(value.replaceAll('AED', '').trim()) ?? 0;
-               tradeSettings.setAmount(parsedAmount); // Use the setAmount method
+               tradeSettings.setAmount(parsedAmount); 
               },
                 textAlign: TextAlign.center,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -214,21 +223,52 @@ class TradeBottomSection extends StatelessWidget {
     );
   }
 
-  Widget _orderButton(String label, Color color, IconData icon, BuildContext context) {
+
+
+
+}
+
+createOrder(int orderType, BuildContext context) async {
+  final tradeSettings = Provider.of<TradeSettingsProvider>(context, listen: false); 
+  final orderRequest = Provider.of<OrderRequestProvider>(context,listen: false);
+
+
+  OrderCreationRequest request = OrderCreationRequest(
+  userId: tradeSettings.userId,
+  userIdInt: tradeSettings.userIdInt,
+  symbol: tradeSettings.symbol,
+  orderType: tradeSettings.ordertype,
+  amount: tradeSettings.amount,
+  strikePrice: tradeSettings.strikeprice,
+  orderDuration: tradeSettings.minutes,
+);
+  orderRequest.createOrder(request,context);
+
+}
+
+
+
+
+
+class OrderButton extends StatelessWidget {
+  const OrderButton({
+    super.key,
+    required this.label,
+    required this.color,
+    required this.icon, required this.onTap,
+
+  });
+
+  final String label;
+  final Color color;
+  final GestureTapCallback onTap;
+  final IconData icon;
+  @override
+  Widget build(BuildContext context) {
+  
     return Expanded(
       child: GestureDetector(
-        onTap: () {
-          
-          showInsufficientFundsDialog(context);
-          String direction = label == "Up" ? "Up" : "Down";
-          Order order = Order(
-            label: label,
-            direction: direction,
-            amount: Provider.of<TradeSettingsProvider>(context, listen: false).amount,
-            time: "${Provider.of<TradeSettingsProvider>(context, listen: false).minutes} min", 
-          );
-          Provider.of<ActiveOrderProvider>(context, listen: false).addOrder(order);
-        },
+        onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
@@ -251,6 +291,4 @@ class TradeBottomSection extends StatelessWidget {
     );
   }
 }
-
-
 
