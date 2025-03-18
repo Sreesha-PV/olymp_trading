@@ -1,9 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:olymp_trade/features/provider/authentication_provider.dart';
 import 'package:olymp_trade/features/trading/trade_screen.dart';
-
 import 'package:provider/provider.dart';
-
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -12,6 +11,9 @@ class AuthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
+    // ValueNotifier for password visibility
+    ValueNotifier<bool> isPasswordVisible = ValueNotifier(false);
 
     return Scaffold(
       backgroundColor: Colors.grey[900],
@@ -40,7 +42,7 @@ class AuthScreen extends StatelessWidget {
                   children: [
                     _buildToggleButtons(authProvider),
                     const SizedBox(height: 20),
-                    _buildForm(authProvider, context),
+                    _buildForm(authProvider, context, isPasswordVisible),
                   ],
                 ),
               );
@@ -104,20 +106,20 @@ class AuthScreen extends StatelessWidget {
   }
 
   // Build the form based on login/register mode
-  Widget _buildForm(AuthProvider authProvider, BuildContext context) {
+  Widget _buildForm(AuthProvider authProvider, BuildContext context, ValueNotifier<bool> isPasswordVisible) {
     return Column(
       children: [
         if (authProvider.isRegistering)
-          _buildTextField(authProvider.usernameController, "Username"),
+        _buildTextField(authProvider.usernameController, "Username"),
         const SizedBox(height: 15),
         _buildTextField(authProvider.emailController, "Email", isEmail: true),
         const SizedBox(height: 15),
-        _buildTextField(authProvider.passwordController, "Password", obscureText: true),
-if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
+        _buildPasswordField(authProvider.passwordController, isPasswordVisible),
+        if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
         const SizedBox(height: 15),
         const SizedBox(height: 15),
         _buildSubmitButton(authProvider, context),
-     if (authProvider.isLoggedIn) ...[
+        if (authProvider.isLoggedIn) ...[
           _buildForgotPasswordLink(context),
           _buildSocialAuthButtons(),
         ] else ...[
@@ -128,12 +130,9 @@ if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
       ],
     );
   }
-
-  // Helper widget for input fields
-  Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false, bool isEmail = false}) {
+ Widget _buildTextField(TextEditingController controller, String hintText, { bool isEmail = false}) {
     return TextFormField(
       controller: controller,
-      obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: hintText,
@@ -152,9 +151,7 @@ if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
           borderRadius: BorderRadius.all(Radius.circular(10)),
           borderSide: BorderSide(color: Colors.red, width: 2),
         ),
-        suffixIcon: obscureText
-            ? const Icon(Icons.visibility_off_outlined, color: Colors.white)
-            : null,
+
       ),
         validator: (value) {
       if (value == null || value.isEmpty) {
@@ -176,7 +173,57 @@ if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
     );
   }
 
-    Widget _buildRememberMeCheckBox(AuthProvider authProvider) {
+  // Helper widget for password field with visibility toggle
+  Widget _buildPasswordField(TextEditingController controller, ValueNotifier<bool> isPasswordVisible) {
+    return ValueListenableBuilder<bool>(
+      valueListenable: isPasswordVisible,
+      builder: (context, value, child) {
+        return TextFormField(
+          controller: controller,
+          obscureText: !value, 
+          style: const TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+            hintText: "Password",
+            hintStyle: TextStyle(color: Colors.grey[400]),
+            filled: true,
+            fillColor: Colors.grey[850],
+            enabledBorder: OutlineInputBorder(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: Colors.grey[800]!, width: 2),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: Colors.green, width: 2),
+            ),
+            errorBorder: const OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              borderSide: BorderSide(color: Colors.red, width: 2),
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                value ? Icons.visibility : Icons.visibility_off_outlined,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                isPasswordVisible.value = !value; 
+              },
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your password';
+            }
+            if (value.length < 8) {
+              return 'Password must be at least 8 characters long';
+            }
+            return null;
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildRememberMeCheckBox(AuthProvider authProvider) {
     return Row(
       children: [
         Checkbox(
@@ -225,17 +272,12 @@ if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
                 authProvider.emailController.text,
                 authProvider.passwordController.text,
               );
-          
+
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) =>  TradeScreen()),
+                MaterialPageRoute(builder: (context) => TradeScreen()),
               );
-
-             
-             
-
             }
-         
           }
         },
         style: ElevatedButton.styleFrom(
@@ -255,7 +297,7 @@ if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
     );
   }
 
-    Widget _buildForgotPasswordLink(context) {
+  Widget _buildForgotPasswordLink(context) {
     return Align(
       alignment: Alignment.center,
       child: GestureDetector(
@@ -336,7 +378,6 @@ if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
       ),
     );
   }
-
 
   void _showMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
