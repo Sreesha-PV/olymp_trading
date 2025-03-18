@@ -47,8 +47,9 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => AccountProvider()),
       ChangeNotifierProvider(create: (_) => SelectedAccountNotifier()),
       // ChangeNotifierProvider(create: (_) => UserProvider()),
-      
-      
+      ChangeNotifierProvider(create: (_)=>OrderRequestProvider()),
+      ChangeNotifierProvider(create: (_) => AuthService()),
+      ChangeNotifierProvider(create: (_)=>UserProvider(AccountDetailsServices())),
       ChangeNotifierProvider(create: (_) => TradeSettingsProvider()),
       ],
       child: MaterialApp(
