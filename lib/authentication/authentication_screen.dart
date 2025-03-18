@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/features/authentication/authentication_service.dart';
+import 'package:olymp_trade/features/provider/authentication_provider.dart';
 import 'package:olymp_trade/features/trading/trade_screen.dart';
+
 import 'package:provider/provider.dart';
+
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -32,7 +34,7 @@ class AuthScreen extends StatelessWidget {
           child: Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               return Form(
-                key: authProvider.formKey,  
+                key: authProvider.formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -49,6 +51,7 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
+  // Toggle between Login and Register modes
   Widget _buildToggleButtons(AuthProvider authProvider) {
     return Container(
       width: double.infinity,
@@ -59,14 +62,14 @@ class AuthScreen extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _buildToggleButton("Login", true, authProvider),
-          _buildToggleButton("Register", false, authProvider)
-     
+          _buildToggleButton("Login", !authProvider.isRegistering, authProvider),
+          _buildToggleButton("Register", authProvider.isRegistering, authProvider),
         ],
       ),
     );
   }
 
+  // Helper widget for toggle button
   Widget _buildToggleButton(
     String title,
     bool isSelected,
@@ -75,13 +78,12 @@ class AuthScreen extends StatelessWidget {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          authProvider.isLoggedIn = isSelected;
-          authProvider.notifyListeners();
+          authProvider.toggleAuthMode();  // Switch between login and register
         },
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: authProvider.isLoggedIn == isSelected
+            color: isSelected
                 ? Colors.grey[800]
                 : Colors.grey[850],
             borderRadius: BorderRadius.circular(5),
@@ -91,7 +93,7 @@ class AuthScreen extends StatelessWidget {
             title,
             style: TextStyle(
               fontSize: 16,
-              color: authProvider.isLoggedIn == isSelected
+              color: isSelected
                   ? Colors.white
                   : Colors.grey[400],
             ),
@@ -100,32 +102,36 @@ class AuthScreen extends StatelessWidget {
       ),
     );
   }
+
+  // Build the form based on login/register mode
   Widget _buildForm(AuthProvider authProvider, BuildContext context) {
     return Column(
       children: [
+        if (authProvider.isRegistering)
+          _buildTextField(authProvider.usernameController, "Username"),
+        const SizedBox(height: 15),
         _buildTextField(authProvider.emailController, "Email", isEmail: true),
         const SizedBox(height: 15),
         _buildTextField(authProvider.passwordController, "Password", obscureText: true),
+if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
         const SizedBox(height: 15),
-        if (authProvider.isLoggedIn) _buildRememberMeCheckBox(authProvider),
         const SizedBox(height: 15),
         _buildSubmitButton(authProvider, context),
-        const SizedBox(height: 15),
-        if (authProvider.isLoggedIn) ...[
+     if (authProvider.isLoggedIn) ...[
           _buildForgotPasswordLink(context),
           _buildSocialAuthButtons(),
         ] else ...[
           _buildSocialAuthButtons(),
           const SizedBox(height: 15),
           _buildLegalAgreement(),
-        ]
+        ],
       ],
     );
   }
 
+  // Helper widget for input fields
   Widget _buildTextField(TextEditingController controller, String hintText, {bool obscureText = false, bool isEmail = false}) {
     return TextFormField(
-      
       controller: controller,
       obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
@@ -133,46 +139,44 @@ class AuthScreen extends StatelessWidget {
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey[400]),
         filled: true,
-      fillColor: Colors.grey[850],
-      
-      
-    enabledBorder: OutlineInputBorder(
-      borderRadius: const BorderRadius.all(Radius.circular(10)),
-      borderSide: BorderSide(color: Colors.grey[800]!,width: 2 ),
-    ),
-    focusedBorder: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      borderSide: BorderSide(color: Colors.green,width: 2 ),
-    ),
-    errorBorder: const OutlineInputBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-      borderSide: BorderSide(color: Colors.red,width: 2),
-    ),
-    
+        fillColor: Colors.grey[850],
+        enabledBorder: OutlineInputBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          borderSide: BorderSide(color: Colors.grey[800]!, width: 2),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderSide: BorderSide(color: Colors.green, width: 2),
+        ),
+        errorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderSide: BorderSide(color: Colors.red, width: 2),
+        ),
         suffixIcon: obscureText
             ? const Icon(Icons.visibility_off_outlined, color: Colors.white)
             : null,
-          ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter $hintText';
-        }
-        if (isEmail && !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
-          return 'Please enter a valid email';
-        }
-        if (!isEmail && value.length < 8) {
+      ),
+        validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'Please enter $hintText';
+      }
+      if (isEmail && !RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value)) {
+        return 'Please enter a valid email';
+      }
+      if (hintText == "Password") { 
+        if (value.length < 8) {
           return 'Password must be at least 8 characters long';
         }
-        if (!isEmail && !RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$').hasMatch(value)) {
-          return 'Password must include uppercase, lowercase, number, and special character';
-        }
-        return null;
-      },
+        // if (!RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$').hasMatch(value)) {
+        //   return 'Password must include uppercase, lowercase, number, and special character';
+        // }
+      }
+      return null;
+    },
     );
   }
 
-
-  Widget _buildRememberMeCheckBox(AuthProvider authProvider) {
+    Widget _buildRememberMeCheckBox(AuthProvider authProvider) {
     return Row(
       children: [
         Checkbox(
@@ -190,6 +194,7 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
+  // Submit button logic for login/register
   Widget _buildSubmitButton(AuthProvider authProvider, BuildContext context) {
     return Container(
       width: double.infinity,
@@ -198,34 +203,39 @@ class AuthScreen extends StatelessWidget {
         gradient: const LinearGradient(
           colors: [
             Color.fromARGB(255, 76, 238, 238),
-            Color.fromARGB(255, 74, 231, 43)
+            Color.fromARGB(255, 74, 231, 43),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
       ),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           if (authProvider.formKey.currentState?.validate() ?? false) {
-            try {
-              if (authProvider.isLoggedIn) {
-                authProvider.login(
-                  authProvider.emailController.text,
-                  authProvider.passwordController.text,
-                );
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  TradeScreen()),
-                );
-              } else {
-                authProvider.register(
-                  authProvider.emailController.text,
-                  authProvider.passwordController.text,
-                );
-              }
-            } catch (e) {
-              _showMessage(context, e.toString());
+            if (authProvider.isRegistering) {
+              // Register user
+              await authProvider.register(
+                authProvider.usernameController.text,
+                authProvider.emailController.text,
+                authProvider.passwordController.text,
+              );
+            } else {
+              // Login user
+              await authProvider.login(
+                authProvider.emailController.text,
+                authProvider.passwordController.text,
+              );
+          
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) =>  TradeScreen()),
+              );
+
+             
+             
+
             }
+         
           }
         },
         style: ElevatedButton.styleFrom(
@@ -234,7 +244,7 @@ class AuthScreen extends StatelessWidget {
           shadowColor: Colors.transparent,
         ),
         child: Text(
-          authProvider.isLoggedIn ? "Log In" : "Register",
+          authProvider.isRegistering ? "Register" : "Login",
           style: const TextStyle(
             fontSize: 20,
             color: Colors.black,
@@ -245,13 +255,11 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildForgotPasswordLink(context) {
+    Widget _buildForgotPasswordLink(context) {
     return Align(
       alignment: Alignment.center,
       child: GestureDetector(
-        onTap: () {
-         
-        },
+        onTap: () {},
         child: const Text(
           'Forgot your Password?',
           style: TextStyle(
@@ -268,20 +276,23 @@ class AuthScreen extends StatelessWidget {
       children: [
         Text(
           'Or continue with',
-          style: TextStyle(color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 16,
+              fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 15),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _socialIconButton(icon: Icons.apple, color: Colors.black, onPressed: () {}),
-            const SizedBox(width: 20),
-            _socialIconButton(icon: Icons.facebook, color: Colors.blue, onPressed: () {}),
+            _socialIconButton(
+                icon: Icons.apple, color: Colors.black, onPressed: () {}),
             const SizedBox(width: 20),
             _socialIconButton(
-              icon: Icons.g_mobiledata_outlined,
-              color: Colors.blue, 
-              onPressed: () {},),
+                icon: Icons.facebook, color: Colors.blue, onPressed: () {}),
+            const SizedBox(width: 20),
+            _socialIconButton(
+              icon: Icons.g_mobiledata_outlined, color: Colors.green, onPressed: () {}),
           ],
         ),
       ],
@@ -289,19 +300,19 @@ class AuthScreen extends StatelessWidget {
   }
 
   Widget _socialIconButton({
-    required IconData icon, 
+    required IconData icon,
     required Color color,
-    required VoidCallback onPressed,}) {
+    required VoidCallback onPressed,
+  }) {
     return GestureDetector(
       onTap: onPressed,
       child: CircleAvatar(
         radius: 30,
         backgroundColor: Colors.white,
-        child: 
-        Icon(
+        child: Icon(
           icon,
           color: color,
-          size: 30,
+          size: 40,
         ),
       ),
     );
@@ -310,10 +321,12 @@ class AuthScreen extends StatelessWidget {
   Widget _buildLegalAgreement() {
     return RichText(
       text: TextSpan(
-        style: TextStyle(color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.bold),
+        style: TextStyle(
+            color: Colors.grey[600], fontSize: 16, fontWeight: FontWeight.bold),
         children: const <TextSpan>[
           TextSpan(
-            text: 'By pressing Register, you confirm that you are of legal age and accept the ',
+            text:
+                'By pressing Register, you confirm that you are of legal age and accept the ',
           ),
           TextSpan(
             text: 'Service Agreement and Policy Privacy',
@@ -324,10 +337,8 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
+
   void _showMessage(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
-
 }
-
-
