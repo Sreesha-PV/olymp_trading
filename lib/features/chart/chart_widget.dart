@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:candlesticks/candlesticks.dart';
@@ -13,10 +11,10 @@ class CandleChartWidget extends StatefulWidget {
   final bool initialThemeIsDark;
 
   const CandleChartWidget({
-    Key? key,
+    super.key,
     required this.repository,
     this.initialThemeIsDark = false,
-  }) : super(key: key);
+  });
 
   @override
   _CandleChartWidgetState createState() => _CandleChartWidgetState();
@@ -170,6 +168,7 @@ class _CandleChartWidgetState extends State<CandleChartWidget> {
                   ToolBarAction(
                     width: 100,
                     onPressed: () {
+                                 
                       showDialog(
                         context: context,
                         builder: (context) {
@@ -177,7 +176,8 @@ class _CandleChartWidgetState extends State<CandleChartWidget> {
                             symbols: symbols,
                             onSelect: (value) {
                               fetchCandles(value);
-                            },
+                            }, 
+                         
                           );
                         },
                       );
