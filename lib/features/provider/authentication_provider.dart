@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/services/auth_service_api.dart';
+import 'package:olymp_trade/services/auth_service.dart';
 
 class AuthProvider with ChangeNotifier {
-  String?registeredUsername;
+  String? registeredUsername;
   String? registeredEmail;
   String? registeredPassword;
   String? token;
@@ -10,24 +10,25 @@ class AuthProvider with ChangeNotifier {
   bool isRegistering = true;
   bool rememberMe = false;
 
-  final TextEditingController usernameController=TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  final AuthService authService = AuthService();  
+  final AuthService authService = AuthService();
 
   // Register method with API call
-  Future<void> register(String username,String email, String password) async {
-    if (username.isNotEmpty&& email.isNotEmpty && password.isNotEmpty) {
+  Future<void> register(String username, String email, String password) async {
+    if (username.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
       try {
-        bool result = await authService.register(username,email, password);  
+        bool result = await authService.register(username, email, password);
         if (result) {
-          registeredUsername=username;
+          registeredUsername = username;
           registeredEmail = email;
           registeredPassword = password;
           usernameController.clear();
           emailController.clear();
           passwordController.clear();
+          isRegistering = false; 
           isLoggedIn = true;
           notifyListeners();
         }
@@ -39,13 +40,13 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
- 
+  // Login method
   Future<void> login(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception("Please enter both email and password.");
     } else {
       try {
-        bool result = await authService.login(email, password);  
+        bool result = await authService.login(email, password);
         if (result) {
           isLoggedIn = true;
           notifyListeners();
@@ -56,17 +57,13 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
- 
   void toggleRememberMe(bool value) {
     rememberMe = value;
     notifyListeners();
   }
 
-    void toggleAuthMode() {
+  void toggleAuthMode() {
     isRegistering = !isRegistering;
     notifyListeners();
   }
 }
-
-
-
