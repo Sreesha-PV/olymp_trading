@@ -1,8 +1,8 @@
-
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/features/provider/authentication_provider.dart';
 import 'package:olymp_trade/features/trading/trade_screen.dart';
 import 'package:provider/provider.dart';
+
+import '../provider/authentication_provider.dart';
 
 class AuthScreen extends StatelessWidget {
   const AuthScreen({super.key});
@@ -12,7 +12,9 @@ class AuthScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // ValueNotifier for password visibility
+  
+
+    
     ValueNotifier<bool> isPasswordVisible = ValueNotifier(false);
 
     return Scaffold(
@@ -115,22 +117,21 @@ class AuthScreen extends StatelessWidget {
         _buildTextField(authProvider.emailController, "Email", isEmail: true),
         const SizedBox(height: 15),
         _buildPasswordField(authProvider.passwordController, isPasswordVisible),
-        if (!authProvider.isRegistering) _buildRememberMeCheckBox(authProvider),
-        const SizedBox(height: 15),
+        if(!authProvider.isRegistering)_buildRememberMeCheckBox(authProvider),
         const SizedBox(height: 15),
         _buildSubmitButton(authProvider, context),
-        if (authProvider.isLoggedIn) ...[
+        if(authProvider.isLoggedIn)...[
           _buildForgotPasswordLink(context),
           _buildSocialAuthButtons(),
-        ] else ...[
+        ]else...[
           _buildSocialAuthButtons(),
-          const SizedBox(height: 15),
+          const SizedBox(height: 15,),
           _buildLegalAgreement(),
-        ],
+        ]
       ],
     );
   }
- Widget _buildTextField(TextEditingController controller, String hintText, { bool isEmail = false}) {
+Widget _buildTextField(TextEditingController controller, String hintText, { bool isEmail = false}) {
     return TextFormField(
       controller: controller,
       style: const TextStyle(color: Colors.white),
@@ -222,7 +223,6 @@ class AuthScreen extends StatelessWidget {
       },
     );
   }
-
   Widget _buildRememberMeCheckBox(AuthProvider authProvider) {
     return Row(
       children: [
@@ -240,7 +240,6 @@ class AuthScreen extends StatelessWidget {
       ],
     );
   }
-
   // Submit button logic for login/register
   Widget _buildSubmitButton(AuthProvider authProvider, BuildContext context) {
     return Container(
@@ -261,22 +260,38 @@ class AuthScreen extends StatelessWidget {
           if (authProvider.formKey.currentState?.validate() ?? false) {
             if (authProvider.isRegistering) {
               // Register user
-              await authProvider.register(
-                authProvider.usernameController.text,
-                authProvider.emailController.text,
-                authProvider.passwordController.text,
-              );
+              try {
+                await authProvider.register(
+                  authProvider.usernameController.text,
+                  authProvider.emailController.text,
+                  authProvider.passwordController.text,
+                );
+                // After registration, show success and switch to login form
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Registration successful, please login')),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Registration failed: $e')),
+                );
+              }
             } else {
               // Login user
-              await authProvider.login(
-                authProvider.emailController.text,
-                authProvider.passwordController.text,
-              );
-
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => TradeScreen()),
-              );
+              try {
+                await authProvider.login(
+                  authProvider.emailController.text,
+                  authProvider.passwordController.text,
+                );
+                // Navigate to TradeScreen after successful login
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => TradeScreen()),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Login failed: $e')),
+                );
+              }
             }
           }
         },
@@ -297,6 +312,7 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
+  
   Widget _buildForgotPasswordLink(context) {
     return Align(
       alignment: Alignment.center,
@@ -341,6 +357,8 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
+
+  
   Widget _socialIconButton({
     required IconData icon,
     required Color color,
