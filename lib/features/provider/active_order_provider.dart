@@ -1,8 +1,5 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:olymp_trade/features/model/order_get_model.dart';
-
 import 'package:olymp_trade/services/order_get_services.dart';
 
 
@@ -21,6 +18,7 @@ class ActiveOrderProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+
   Future<void> fetchOrders() async {
     _isLoading = true;
     _errorMessage = null;
@@ -35,11 +33,9 @@ class ActiveOrderProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
- 
+  void removeOrder(int id) {
+    _orders.removeWhere((order) => order.idInt == id);
+    notifyListeners();
+  }
 
 }
-
-
-
-
-
