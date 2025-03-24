@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../provider/balance_provider.dart';
 import '../provider/selected_account_provider.dart';
 
 class AccountDrawer extends StatefulWidget {
@@ -18,9 +18,8 @@ class AccountDrawer extends StatefulWidget {
 }
 
 class _AccountDrawerState extends State<AccountDrawer> {
-  List<int> _expandedAccounts = []; // Tracks expanded accounts
+  List<int> _expandedAccounts = [];
 
-  // Toggle account expansion
   void _toggleExpansion(int index) {
     setState(() {
       if (_expandedAccounts.contains(index)) {
@@ -33,8 +32,6 @@ class _AccountDrawerState extends State<AccountDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    // final selectedAccountNotifier = Provider.of<SelectedAccountNotifier>(context);
-
     return Drawer(
       width: 360,
       backgroundColor: const Color.fromARGB(255, 26, 25, 25),
@@ -46,21 +43,39 @@ class _AccountDrawerState extends State<AccountDrawer> {
             const SizedBox(height: 40),
             _buildHeader(context),
             const SizedBox(height: 30),
-            _buildAccountButton(context, 'Demo Account', 0, "Ð10,000.00"),
+              Consumer<BalanceProvider>(
+                builder: (context, balanceProvider, child) {  
+                  if (balanceProvider.balance == null && !balanceProvider.isLoading) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      balanceProvider.loadBalance(); 
+                    });
+                  }
+
+                  print("Got the balance in consumer ${balanceProvider.balance?.availableBalance}");
+
+
+                  return _buildAccountButton(
+                    context,
+                    'Demo Account',
+                    0,
+                    balanceProvider.balance != null
+                        ? "Ð${balanceProvider.balance?.availableBalance}"
+                        : "Loading...",
+                  );
+                },
+              ),
             const SizedBox(height: 20),
             _buildAccountButton(context, 'AED Account', 1, "AED 0.00", expandable: true),
             const SizedBox(height: 20),
             _buildAccountButton(context, 'USDT Account', 2, "USDT 0.00", expandable: true),
             const SizedBox(height: 20),
             _buildAccountButton(context, '+ Add Account', 3, "", isAddButton: true),
-           
           ],
         ),
       ),
     );
   }
 
-  /// Builds the drawer header with title and close button
   Widget _buildHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -81,7 +96,6 @@ class _AccountDrawerState extends State<AccountDrawer> {
     );
   }
 
-  /// Builds account button widget
   Widget _buildAccountButton(
     BuildContext context,
     String label,
@@ -99,7 +113,6 @@ class _AccountDrawerState extends State<AccountDrawer> {
         InkWell(
           onTap: () {
             if (isAddButton) {
-              // Handle Add Account button tap
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Add Account clicked")),
               );
@@ -134,7 +147,6 @@ class _AccountDrawerState extends State<AccountDrawer> {
     );
   }
 
-  /// Builds the account info widget with label and balance
   Widget _buildAccountInfo(BuildContext context, String label, String balance, bool isSelected) {
     final selectedAccountNotifier = Provider.of<SelectedAccountNotifier>(context);
     return Column(
@@ -161,7 +173,6 @@ class _AccountDrawerState extends State<AccountDrawer> {
     );
   }
 
-  /// Builds the expandable action buttons (Withdraw and Deposit)
   Widget _buildExpandableActions() {
     return Container(
       height: 60,
@@ -182,14 +193,11 @@ class _AccountDrawerState extends State<AccountDrawer> {
     );
   }
 
-  /// Builds the withdraw button
   Widget _buildWithdrawButton() {
     return Padding(
       padding: const EdgeInsets.only(left: 10, right: 10, bottom: 8),
       child: ElevatedButton(
-        onPressed: () {
-          // Handle Withdraw action
-        },
+        onPressed: () {},
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.grey[700],
           foregroundColor: Colors.white,
@@ -203,7 +211,6 @@ class _AccountDrawerState extends State<AccountDrawer> {
     );
   }
 
-  /// Builds the deposit button with a gradient
   Widget _buildDepositButton() {
     return Padding(
       padding: const EdgeInsets.only(right: 20, bottom: 8),
@@ -219,7 +226,6 @@ class _AccountDrawerState extends State<AccountDrawer> {
         ),
         child: ElevatedButton(
           onPressed: () {
-            // Handle Deposit action
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Deposit clicked")),
             );
