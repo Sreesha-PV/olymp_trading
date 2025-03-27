@@ -79,3 +79,54 @@ class TradeHistoryProvider extends ChangeNotifier {
 
 
 
+
+
+
+
+
+import 'package:flutter/material.dart';
+import 'package:olymp_trade/features/model/order_get_model.dart';
+import 'package:olymp_trade/features/model/trade_history_model.dart';
+import 'package:olymp_trade/services/trade_history_services.dart';
+
+class TradeHistoryProvider extends ChangeNotifier {
+  final TradeHistoryServices _service = TradeHistoryServices();
+  List<TradeHistory> _tradeHistory = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  List<TradeHistory> get tradeHistory => _tradeHistory;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+
+  TradeHistoryProvider() {
+    fetchTrades();
+  }
+
+  Future<void> fetchTrades() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      _tradeHistory = await _service.fetchTrades();
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void addTrade(OrderGet order) {
+    final trade = TradeHistory(
+      symbol: order.symbol,
+      amount: order.amount,
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+    );
+    _tradeHistory.add(trade);
+    notifyListeners();
+  }
+}
+
+
+
