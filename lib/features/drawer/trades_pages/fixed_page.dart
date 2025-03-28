@@ -544,3 +544,114 @@ class FixedTimePage extends StatelessWidget {
 //   );
 // }
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import 'package:flutter/material.dart';
+import 'package:olymp_trade/features/model/order_get_model.dart';
+import 'package:olymp_trade/features/providers/active_order_provider.dart';
+import 'package:olymp_trade/features/providers/trade_history_provider.dart';
+import 'package:provider/provider.dart';
+
+class FixedTimePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Fixed Time Trades")),
+      body: Column(
+        children: [
+          Expanded(child: _buildActiveTrades(context)),
+          Divider(),
+          Expanded(child: _buildTradeHistory(context)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActiveTrades(BuildContext context) {
+    return Consumer<ActiveOrderProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (provider.orders.isEmpty) {
+          return Center(child: Text("No active trades."));
+        }
+
+        return ListView.builder(
+          itemCount: provider.orders.length,
+          itemBuilder: (context, index) {
+            final order = provider.orders[index];
+            return ListTile(
+              title: Text(order.symbol),
+              subtitle: Text("Amount: ${order.amount} | Duration: ${order.duration} min"),
+              trailing: _buildTimer(order, provider, context),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildTimer(OrderGet order, ActiveOrderProvider provider, BuildContext context) {
+    return StreamBuilder<int>(
+      stream: _countdownStream(order.duration),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          int remainingTime = snapshot.data!;
+          if (remainingTime <= 0) {
+            // Move order to history when time expires
+            Future.microtask(() => provider.transferToHistory(context, order));
+            return Text("Moving to history...");
+          }
+          return Text("Time left: ${remainingTime}s", style: TextStyle(color: Colors.red));
+        }
+        return Text("Loading...");
+      },
+    );
+  }
+
+  Stream<int> _countdownStream(int durationInMinutes) async* {
+    int durationInSeconds = durationInMinutes * 60;
+    for (int i = durationInSeconds; i >= 0; i--) {
+      await Future.delayed(Duration(seconds: 1));
+      yield i;
+    }
+  }
+
+  Widget _buildTradeHistory(BuildContext context) {
+    return Consumer<TradeHistoryProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Center(child: CircularProgressIndicator());
+        }
+        if (provider.tradeHistory.isEmpty) {
+          return Center(child: Text("No trade history."));
+        }
+
+        return ListView.builder(
+          itemCount: provider.tradeHistory.length,
+          itemBuilder: (context, index) {
+            final trade = provider.tradeHistory[index];
+            return ListTile(
+              title: Text(trade.symbol),
+              subtitle: Text("Amount: ${trade.amount} | Time: ${DateTime.fromMillisecondsSinceEpoch(trade.timestamp)}"),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
