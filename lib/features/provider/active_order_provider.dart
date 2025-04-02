@@ -43,3 +43,67 @@ class ActiveOrderProvider extends ChangeNotifier {
 
 
 
+
+
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
+import '../models/order.dart';
+
+class OrdersProvider with ChangeNotifier {
+  List<Order> _activeOrders = [];
+  List<Order> _tradeHistory = [];
+  late IOWebSocketChannel _channel;
+
+  OrdersProvider() {
+    _connectWebSocket();
+  }
+
+  List<Order> get activeOrders => _activeOrders;
+  List<Order> get tradeHistory => _tradeHistory;
+
+  void _connectWebSocket() {
+    _channel = IOWebSocketChannel.connect('wss://your-websocket-url');
+
+    _channel.stream.listen((message) {
+      final data = jsonDecode(message);
+      _handleWebSocketMessage(data);
+    }, onError: (error) {
+      print("WebSocket Error: $error");
+      _reconnect();
+    }, onDone: () {
+      print("WebSocket Disconnected");
+      _reconnect();
+    });
+  }
+
+  void _handleWebSocketMessage(Map<String, dynamic> data) {
+    if (data['type'] == 'new_order') {
+      _activeOrders.add(Order.fromJson(data['order']));
+    } else if (data['type'] == 'order_completed') {
+      _moveOrderToHistory(data['order_id']);
+    }
+    notifyListeners();
+  }
+
+  void _moveOrderToHistory(String orderId) {
+    final order = _activeOrders.firstWhere((o) => o.id == orderId, orElse: () => Order.empty());
+    if (order.id.isNotEmpty) {
+      _activeOrders.remove(order);
+      _tradeHistory.add(order);
+      notifyListeners();
+    }
+  }
+
+  void _reconnect() async {
+    await Future.delayed(Duration(seconds: 5));
+    _connectWebSocket();
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    super.dispose();
+  }
+}
+
