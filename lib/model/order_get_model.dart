@@ -143,3 +143,66 @@ class OrderGet {
 
 }
 
+
+
+
+
+import 'package:olymp_trade/features/model/trade_history_model.dart';
+
+class OrderGet {
+  String id;
+  String symbol;
+  double amount;
+  double strikePrice;
+  int orderStatus;
+  int createdAt;
+  int expiryTime; 
+  int?orderDuration;
+
+  OrderGet({
+    required this.id,
+    required this.symbol,
+    required this.amount,
+    required this.strikePrice,
+    required this.orderStatus,
+    required this.createdAt,
+    required this.expiryTime,
+    required this.orderDuration,
+  });
+
+  factory OrderGet.fromJson(Map<String, dynamic> json) {
+    
+    return OrderGet(
+      id: json['order_id'] ?? '', 
+      symbol: json['symbol'] ?? '', 
+      amount: json['amount']?.toDouble() ?? 0.0, 
+      strikePrice: json['strike_price']?.toDouble() ?? 0.0, 
+      orderStatus: json['order_type'] ?? 0, 
+      createdAt: json['order_placed_timestamp'] ?? 0, 
+      expiryTime: json['expiry_time'] ?? 0, 
+      orderDuration: json['order_duration']??0
+      
+    );
+  }
+
+  // Duration getRemainingTime() {
+  //   // Calculate the remaining time until expiry
+  //   return Duration(seconds: expiryTime - DateTime.now().millisecondsSinceEpoch ~/ 1000);
+  // }
+
+Duration getRemainingTime() {
+  int now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  return Duration(seconds: expiryTime - now);
+}
+
+  TradeHistory toTradeHistory() {
+    return TradeHistory(
+      id: this.id,
+      symbol: this.symbol,
+      strikePrice: this.strikePrice,
+      amount: this.amount,
+      orderPlacedTimestamp: this.createdAt,
+      orderExecutedTimestamp: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+    );
+  }
+}
