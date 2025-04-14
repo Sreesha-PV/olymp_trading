@@ -227,6 +227,145 @@ void _moveOrderToHistory(OrderGet order) {
 
 
 
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:olymp_trade/features/model/order_get_model.dart';
+import 'package:olymp_trade/features/model/trade_history_model.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+class TradeSocketProvider with ChangeNotifier {
+  late final WebSocketChannel _channel;
+  final List<OrderGet> _activeOrders = [];
+  final List<TradeHistory> _tradeHistory = [];
+  final Map<String, Timer> _orderTimers = {};
+  final Set<String> _completedOrderIds = {}; // To avoid double handling
+
+  List<OrderGet> get activeOrders => _activeOrders;
+  List<TradeHistory> get tradeHistory => _tradeHistory;
+
+  TradeSocketProvider() {
+    _connectWebSocket();
+  }
+
+  void _connectWebSocket() {
+    _channel = WebSocketChannel.connect(
+      Uri.parse('ws://192.168.4.30:4600/ws/1011'),
+    );
+
+    _channel.stream.listen(
+      (data) {
+        print('[WebSocket] Received: $data');
+        try {
+          final json = jsonDecode(data);
+
+          // Handle new order
+          if (json.containsKey('order_id') && json.containsKey('timestamp')) {
+            final order = OrderGet.fromJson({
+              'id': json['order_id'],
+              'symbol': json['symbol'],
+              'amount': json['amount'],
+              'strike_price': json['strike_price'],
+              'order_status': json['order_type'],
+              'created_at': json['order_placed_timestamp'],
+              'expiry_time': json['expiry_time'],
+            });
+
+            _activeOrders.add(order);
+            _startOrderTimer(order);
+            print('[WebSocket] Order placed: ${order.id}');
+            notifyListeners();
+          }
+
+          // Handle order result
+          else if (json['order_id'] != null && json['symbol'] != null) {
+            final orderId = json['order_id'];
+
+            if (_completedOrderIds.contains(orderId)) {
+              print('[WebSocket] Order $orderId already handled.');
+              return;
+            }
+
+            _completedOrderIds.add(orderId);
+
+            final expiredOrder = OrderGet.fromJson({
+              'id': orderId,
+              'symbol': json['symbol'],
+              'amount': json['amount'],
+              'strike_price': json['strike_price'],
+              'order_status': json['order_type'],
+              'created_at': json['order_placed_timestamp'],
+            });
+
+            _activeOrders.removeWhere((order) => order.id == orderId);
+            _orderTimers[orderId]?.cancel();
+            _orderTimers.remove(orderId);
+
+            final trade = expiredOrder.toTradeHistory();
+            trade.profit = json['profit'] ?? 0;
+            trade.loss = json['loss'] ?? 0;
+            trade.timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+            _tradeHistory.insert(0, trade);
+            print('[WebSocket] Order result received and moved to history: $orderId');
+            notifyListeners();
+          }
+        } catch (e) {
+          print('[WebSocket] Error parsing message: $e');
+        }
+      },
+      onDone: () {
+        print('[WebSocket] Connection closed. Reconnecting...');
+        _connectWebSocket();
+      },
+      onError: (error) {
+        print('[WebSocket] Error: $error');
+      },
+    );
+  }
+
+  void _startOrderTimer(OrderGet order) {
+    final Duration remainingTime = order.getRemainingTime();
+
+    final timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final timeLeft = order.getRemainingTime();
+
+      if (timeLeft.isNegative || timeLeft.inSeconds <= 0) {
+        timer.cancel();
+        _orderTimers.remove(order.id);
+
+        if (_completedOrderIds.contains(order.id)) return;
+
+        _completedOrderIds.add(order.id);
+        _moveOrderToHistory(order);
+      }
+
+      notifyListeners();
+    });
+
+    _orderTimers[order.id] = timer;
+  }
+
+  void _moveOrderToHistory(OrderGet order) {
+    _activeOrders.removeWhere((o) => o.id == order.id);
+    _orderTimers[order.id]?.cancel();
+    _orderTimers.remove(order.id);
+
+    final trade = order.toTradeHistory();
+    trade.timestamp = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    _tradeHistory.insert(0, trade);
+
+    print('[Timer] Order expired and moved to history: ${trade.id}');
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    _orderTimers.values.forEach((timer) => timer.cancel());
+    super.dispose();
+  }
+}
 
 
 
