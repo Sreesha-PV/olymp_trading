@@ -674,4 +674,28 @@ class OrderButton extends StatelessWidget {
   }
 }
 
+if (json.containsKey('order_id') && json.containsKey('timestamp') == false) {
+  final newOrderId = json['order_id'];
+
+  // Duplicate check
+  if (_activeOrders.any((o) => o.id == newOrderId)) {
+    print('[WebSocket] Skipping duplicate active order: $newOrderId');
+    return;
+  }
+
+  final order = OrderGet.fromJson({
+    'order_id': json['order_id'],
+    'symbol': json['symbol'],
+    'amount': json['amount'],
+    'strike_price': json['strike_price'],
+    'order_type': json['order_type'],
+    'order_placed_timestamp': json['order_placed_timestamp'],
+    'expiry_time': json['expiry_time'],
+    'order_duration': json['order_duration'],
+  });
+
+  _activeOrders.add(order);
+  _startOrderTimer(order);
+  notifyListeners();
+}
 
