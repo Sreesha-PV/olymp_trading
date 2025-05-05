@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/services/auth_service.dart';
+import 'package:olymp_trade/services/auth_service.dart'; 
 
 class AuthProvider with ChangeNotifier {
   String? registeredUsername;
@@ -16,7 +16,6 @@ class AuthProvider with ChangeNotifier {
   final formKey = GlobalKey<FormState>();
   final AuthService authService = AuthService();
 
-  // Register method with API call
   Future<void> register(String username, String email, String password) async {
     if (username.isNotEmpty && email.isNotEmpty && password.isNotEmpty) {
       try {
@@ -28,7 +27,7 @@ class AuthProvider with ChangeNotifier {
           usernameController.clear();
           emailController.clear();
           passwordController.clear();
-          isRegistering = false; 
+          isRegistering = false;
           isLoggedIn = true;
           notifyListeners();
         }
@@ -40,7 +39,6 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Login method
   Future<void> login(String email, String password) async {
     if (email.isEmpty || password.isEmpty) {
       throw Exception("Please enter both email and password.");
@@ -66,4 +64,20 @@ class AuthProvider with ChangeNotifier {
     isRegistering = !isRegistering;
     notifyListeners();
   }
+
+  void logout(){
+    registeredUsername = null;
+    registeredEmail = null;
+    registeredPassword = null;
+    token = null;
+    isLoggedIn = false;
+    usernameController.clear();
+    passwordController.clear();
+    emailController.clear();
+    rememberMe = false;
+    isRegistering = true;
+    notifyListeners();
+  }
 }
+
+
