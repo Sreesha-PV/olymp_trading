@@ -1,0 +1,2 @@
+C:/Users/sreesha/Documents/money_managment/olymp_trade/android/app/.cxx/RelWithDebInfo/6cji4u4s/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/Users/sreesha/Documents/money_managment/olymp_trade/android/app/.cxx/RelWithDebInfo/6cji4u4s/arm64-v8a/CMakeFiles/rebuild_cache.dir

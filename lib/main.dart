@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/authentication/login.dart';
-import 'package:olymp_trade/screens/dashboard_screen.dart';
-import 'package:olymp_trade/screens/provider/icon_provider.dart';
-import 'package:olymp_trade/screens/provider/order_provider.dart';
-import 'package:olymp_trade/screens/provider/tabbar_provider.dart';
-import 'package:olymp_trade/screens/provider/user_provider.dart';
+import 'package:olymp_trade/features/authentication/authentication_screen.dart';
+import 'package:olymp_trade/features/provider/account_drawer_provider.dart';
+import 'package:olymp_trade/features/provider/balance_provider.dart';
+import 'package:olymp_trade/features/provider/drawer_provider.dart';
+import 'package:olymp_trade/features/provider/dropdown_provider.dart';
+import 'package:olymp_trade/features/provider/enable_order_provider.dart';
+import 'package:olymp_trade/features/provider/orderrequest_provider.dart';
+import 'package:olymp_trade/features/provider/tradesettings_provider.dart';
+import 'package:olymp_trade/features/provider/order_provider.dart';
+import 'package:olymp_trade/features/provider/selected_account_provider.dart';
+import 'package:olymp_trade/features/provider/selected_index_provider.dart';
+import 'package:olymp_trade/features/provider/tabbar_provider.dart';
+import 'package:olymp_trade/features/provider/tradesocket_provider.dart';
+import 'package:olymp_trade/features/provider/user_provider.dart';
+import 'package:olymp_trade/features/trading/trade_screen.dart';
+// import 'package:olymp_trade/features/trading/trade_screen.dart';
+import 'package:olymp_trade/services/account_details_services.dart';
+import 'package:olymp_trade/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'screens/provider/account_drawer_provider.dart';
-import 'screens/provider/drawer_provider.dart';
-import 'screens/provider/dropdown_provider.dart';
-import 'screens/provider/enable_order_provider.dart';
-import 'screens/provider/selected_account_notifier.dart';
-import 'screens/provider/selected_index_provider.dart';
-
+import 'features/provider/authentication_provider.dart';
 
 void main() {
   runApp(
@@ -20,58 +26,37 @@ void main() {
   );
 }
 
-
-
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => SelectedIndexNotifier()),
+        ChangeNotifierProvider(create: (_) => DrawerProvider()),
+        ChangeNotifierProvider(create: (_) => TabVisibilityProvider()),
+        ChangeNotifierProvider(create: (_) => OrderProvider()),
+        ChangeNotifierProvider(create: (_)=>TradeSocketProvider()),
+        ChangeNotifierProvider(create: (_)=>EnableOrderProvider()),
+        ChangeNotifierProvider(create: (_) => ProfitabilityProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => AccountProvider()),
+        ChangeNotifierProvider(create: (_) => SelectedAccountNotifier()),
+        ChangeNotifierProvider(create: (_) => OrderRequestProvider()),
+        ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(
-          create: (_) => SelectedIndexNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => DrawerProvider(),
-        ),
-          ChangeNotifierProvider(
-          create: (_) => OrderProvider(),
-        ),
-          ChangeNotifierProvider(
-          create: (_) => TabVisibilityProvider(),
-        ),
-         ChangeNotifierProvider(
-          create: (_) => ProfitabilityProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_)=>EnableOrderProvider(),
-        ),
-         ChangeNotifierProvider(
-          create: (_)=>AccountProvider(),
-        ),
-         ChangeNotifierProvider(
-          create: (_)=>SelectedAccountNotifier(),
-        ),
-        ChangeNotifierProvider(
-          create: (_)=>UserProvider()),
-        ChangeNotifierProvider(
-          create: (_)=>TradeSettingsProvider())
+            create: (_) => UserProvider(AccountDetailsServices())),
+        ChangeNotifierProvider(create: (_) => TradeSettingsProvider()),
+        ChangeNotifierProvider(create: (_) => BalanceProvider())
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
-         theme: ThemeData.dark(),
-            // home: LoginScreen(),
-            home: TradeScreen(), 
-            // home: RegistrationScreen(),
-          
+        theme: ThemeData.dark(),
+        home: const AuthScreen(),
+        // home: TradeScreen(),
+       
       ),
     );
   }
 }
-
-
-
-

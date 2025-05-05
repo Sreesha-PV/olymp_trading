@@ -1,17 +1,14 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/screens/provider/dropdown_provider.dart';
+import 'package:olymp_trade/features/provider/dropdown_provider.dart';
 import 'package:provider/provider.dart';
 
 class ByTimePage extends StatelessWidget {
   const ByTimePage({super.key});
 
-
-  
   @override
   Widget build(BuildContext context) {
-     final TextEditingController priceController = TextEditingController();
+    final TextEditingController priceController = TextEditingController();
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -26,12 +23,10 @@ class ByTimePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                 
                   const Text(
                     'Profitability',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  // Dropdown button
                   Consumer<ProfitabilityProvider>(
                     builder: (context, model, child) {
                       return DropdownButton<String>(
@@ -42,8 +37,12 @@ class ByTimePage extends StatelessWidget {
                         onChanged: (String? newValue) {
                           model.selectedValue = newValue ?? 'any';
                         },
-                        items: <String>['any', 'from 70%', 'from 80%', 'from 90%']
-                            .map<DropdownMenuItem<String>>((String value) {
+                        items: <String>[
+                          'any',
+                          'from 70%',
+                          'from 80%',
+                          'from 90%'
+                        ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(value),
@@ -55,39 +54,41 @@ class ByTimePage extends StatelessWidget {
                 ],
               ),
             ),
-
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Row(
                 children: [
                   _OpeningTimeField(
-                        label: 'Opening Time', 
-                        controller: priceController,
-              
+                    label: 'Opening Time',
+                    controller: priceController,
                   ),
                 ],
               ),
             ),
-
             const Padding(
               padding: EdgeInsets.only(top: 8),
               child: Row(
                 children: [
-                  Text('Your trade will be open today 13:00 if ',
-                  style: TextStyle(fontSize: 11,color: Color.fromARGB(255, 230, 245, 247)),)
+                  Text(
+                    'Your trade will be open today 13:00 if ',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Color.fromARGB(255, 230, 245, 247)),
+                  )
                 ],
               ),
             ),
-             const Row(
+            const Row(
               children: [
-                Text('the profitability is 70% or higher ',
-                style: TextStyle(fontSize: 11,color: Color.fromARGB(255, 230, 245, 247)),)
+                Text(
+                  'the profitability is 70% or higher ',
+                  style: TextStyle(
+                      fontSize: 11, color: Color.fromARGB(255, 230, 245, 247)),
+                )
               ],
             ),
-         
-
             Padding(
-              padding: const EdgeInsets.only(top: 10,left: 6),
+              padding: const EdgeInsets.only(top: 10, left: 6),
               child: Row(
                 children: [
                   Container(
@@ -109,11 +110,8 @@ class ByTimePage extends StatelessWidget {
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 15,
-                              fontWeight: FontWeight.bold
-                              ),
-                             
-                        ),  
-                        
+                              fontWeight: FontWeight.bold),
+                        ),
                       ],
                     ),
                   ),
@@ -123,13 +121,9 @@ class ByTimePage extends StatelessWidget {
           ],
         ),
       ),
-      
     );
   }
 }
-
-
-
 
 class _OpeningTimeField extends StatefulWidget {
   final String label;
@@ -154,7 +148,6 @@ class _OpeningPriceFieldState extends State<_OpeningTimeField> {
     super.initState();
     _focusNode.addListener(() {
       setState(() {
-     
         if (_focusNode.hasFocus) {
           _borderColor = const Color.fromARGB(255, 102, 240, 83);
           _titleColor = Colors.green;
@@ -187,7 +180,6 @@ class _OpeningPriceFieldState extends State<_OpeningTimeField> {
           ),
           child: Stack(
             children: [
-              
               Positioned(
                 top: _focusNode.hasFocus ? 0 : 16,
                 left: 10,
@@ -200,7 +192,6 @@ class _OpeningPriceFieldState extends State<_OpeningTimeField> {
                   child: Text(widget.label),
                 ),
               ),
-              
               Positioned.fill(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -220,10 +211,3 @@ class _OpeningPriceFieldState extends State<_OpeningTimeField> {
     );
   }
 }
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/features/provider/tabbar_provider.dart';
 import 'package:olymp_trade/screens/showDialog/up/tabbar_pages/time_page.dart';
 import 'package:provider/provider.dart';
-import 'provider/tabbar_provider.dart';
 import 'showDialog/up/tabbar_pages/price_page.dart';
 
 class EnableOrder extends StatelessWidget {
@@ -23,11 +23,10 @@ class EnableOrder extends StatelessWidget {
               length: 2,
               child: Column(
                 children: [
-                
                   const Padding(
                     padding: EdgeInsets.only(top: 10, left: 16),
                     child: Align(
-                      alignment: Alignment.centerLeft, 
+                      alignment: Alignment.centerLeft,
                       child: Text(
                         'Order Details',
                         style: TextStyle(
@@ -37,7 +36,6 @@ class EnableOrder extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   TabBar(
                     labelColor: Colors.white,
                     unselectedLabelColor: Colors.grey,
