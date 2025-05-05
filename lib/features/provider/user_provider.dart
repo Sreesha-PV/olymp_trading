@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../services/account_details_services.dart';
 
 class UserProvider extends ChangeNotifier {
@@ -18,7 +17,7 @@ class UserProvider extends ChangeNotifier {
   final AccountDetailsServices _accountDetailsServices;
 
   UserProvider(this._accountDetailsServices) {
-    fetchUserData();  
+    fetchUserData();
   }
 
   Future<void> fetchUserData() async {
@@ -37,8 +36,16 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
       print('Error fetching user data: $e');
     }
+  } 
+ 
+  void clearUser(){
+    _email = '';
+    _name = '';
+    _userId = '';
+    _uuid = '';
+    _isLoading = false;
   }
 
+  
 }
-
 
