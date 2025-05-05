@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:olymp_trade/features/dialog/insufficient_fund_dialogg.dart';
+import 'package:olymp_trade/features/dialog/order_success.dart';
+import 'package:olymp_trade/features/model/order_creation_request.dart';
 import 'package:olymp_trade/features/provider/order_provider.dart';
+import 'package:olymp_trade/features/provider/orderrequest_provider.dart';
 import 'package:olymp_trade/features/provider/tabbar_provider.dart';
-
+import 'package:olymp_trade/features/provider/tradesettings_provider.dart';
+import 'package:olymp_trade/features/provider/tradesocket_provider.dart';
 import 'package:provider/provider.dart';
 
 class RightSidebarSection extends StatelessWidget {
-  const RightSidebarSection({super.key});
+   const RightSidebarSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,8 @@ class RightSidebarSection extends StatelessWidget {
       color: Colors.black,
       child: Column(
         children: [
-          _buildAmountAndDurationFields(amountController, durationController, context),
+          _buildAmountAndDurationFields(
+              amountController, durationController, context),
           const SizedBox(height: 10),
           _buildActionButtons(amountController, context),
           const SizedBox(height: 10),
@@ -57,7 +61,7 @@ class RightSidebarSection extends StatelessWidget {
       ],
     );
   }
-
+ 
   Widget _buildAmountAdjustmentButtons() {
     return Row(
       children: [
@@ -148,14 +152,18 @@ class RightSidebarSection extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(TextEditingController amountController, BuildContext context) {
+  Widget _buildActionButtons(
+      TextEditingController amountController, BuildContext context) {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 20.0, top: 12),
           child: Row(
             children: [
-              _buildOrderEnableButton(amountController, context),
+              _buildOrderEnableButton(
+                amountController,
+                context,
+              ),
             ],
           ),
         ),
@@ -179,7 +187,10 @@ class RightSidebarSection extends StatelessWidget {
     );
   }
 
-  Widget _buildOrderEnableButton(TextEditingController amountController, BuildContext context) {
+  Widget _buildOrderEnableButton(
+    TextEditingController amountController,
+    BuildContext context,
+  ) {
     return Container(
       height: 60,
       width: 160,
@@ -191,8 +202,8 @@ class RightSidebarSection extends StatelessWidget {
         onPressed: () {
           String amount = amountController.text;
           if (amount.isNotEmpty) {
-            Provider.of<OrderProvider>(context, listen: false)
-                .placeOrder(amount);
+            Provider.of<OrderProvider>(context, listen: false);
+            // .placeOrder(amount);
           }
           Provider.of<TabVisibilityProvider>(context, listen: false)
               .toggleTabBarVisibility();
@@ -200,7 +211,7 @@ class RightSidebarSection extends StatelessWidget {
         child: const Row(
           children: [
             Text(
-              "Enable Order",
+              "Enable Orders",
               style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -230,9 +241,15 @@ class RightSidebarSection extends StatelessWidget {
         children: [
           TextButton(
             onPressed: () {
-              // upDialog(context);
-              showInsufficientFundsDialog(context);
+              createOrder(1, context);
+              orderSuccessDialog(context);
+              // showInsufficientFundsDialog(context);
             },
+            // onPressed: isUpDisabled
+            // ? null
+            // :(){
+            //  handleOrder(0,context);
+            // },
             child: const Text(
               'Up',
               style: TextStyle(
@@ -266,8 +283,15 @@ class RightSidebarSection extends StatelessWidget {
           TextButton(
             onPressed: () {
               // upDialog(context);
-              showInsufficientFundsDialog(context);
+              // showInsufficientFundsDialog(context);
+              createOrder(0, context);
+              orderSuccessDialog(context);
             },
+            // onPressed: isDownDisabled
+            //     ?null
+            //     :(){
+            //       handleOrder(1,context);
+            //     },
             child: const Text(
               'Down',
               style: TextStyle(
@@ -306,6 +330,26 @@ class RightSidebarSection extends StatelessWidget {
       },
     );
   }
+  createOrder(int orderType, BuildContext context) async {
+    final tradeSettings =
+        Provider.of<TradeSettingsProvider>(context, listen: false);
+    final orderRequest =
+        Provider.of<OrderRequestProvider>(context, listen: false);
+    final socketProvider = 
+        Provider.of<TradeSocketProvider>(context,listen: false);
+    OrderCreationRequest request = OrderCreationRequest(
+      userId: tradeSettings.userId,
+      userIdInt: tradeSettings.userIdInt,
+      symbol: tradeSettings.symbol,
+      // orderType: tradeSettings.ordertype,
+      orderType: orderType,
+      amount: tradeSettings.amount,
+      strikePrice: tradeSettings.strikeprice,
+      orderDuration: tradeSettings.minutes,
+    );
+    await orderRequest.createOrder(request, context);
+    socketProvider.fetchActiveOrders();
+  } 
 }
 
 class AmountField extends StatefulWidget {
