@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class TradeSettingsProvider with ChangeNotifier {
@@ -11,6 +10,9 @@ class TradeSettingsProvider with ChangeNotifier {
   String? _userId;
   int _userIdInt = 0;
 
+  double? _availablebalance = 0;
+
+  // bool _isOrderPlaced = false;
 
   double get amount => _amount;
   int get minutes => _minutes;
@@ -21,34 +23,30 @@ class TradeSettingsProvider with ChangeNotifier {
   String? get userId => _userId;
   int get userIdInt => _userIdInt;
 
+  double? get availableBalance => _availablebalance;
 
+  // bool get isOrderPlaced => _isOrderPlaced;
 
-
- 
   void setAmount(double value) {
     _amount = value;
     notifyListeners();
-  }
+  } 
 
   void setMinutes(int value) {
     _minutes = value;
     notifyListeners();
   }
-
-  // void setSymbols(String value) {
-  //   _symbols = value;
-  //   notifyListeners();
-  // }
+  
   void setSymbols(String symbol) {
     if (symbol.isEmpty) {
-  
-    print("Symbol cannot be empty!");
-    return;
-  }
+      print("Symbol cannot be empty!");
+      return;
+    }
     _symbols = symbol;
     print("Symbol updated to: $_symbols");
     notifyListeners();
   }
+
   void setStrikeprice(double value) {
     _strikeprice = value;
     notifyListeners();
@@ -59,7 +57,6 @@ class TradeSettingsProvider with ChangeNotifier {
     notifyListeners();
   }
 
-
   void setUserId(String userId) {
     _userId = userId;
     notifyListeners();
@@ -69,8 +66,7 @@ class TradeSettingsProvider with ChangeNotifier {
     _userIdInt = userIdInt;
     notifyListeners();
   }
-
-
+ 
   void resetUser() {
     _userId = null;
     _userIdInt = 0;
@@ -100,11 +96,14 @@ class TradeSettingsProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+ 
+  void setBalance(double value){
+    _availablebalance = value;
+    notifyListeners();
+  } 
 
-  
-
-
+  // set isOrderPlaced(bool value){
+  //   _isOrderPlaced = value;
+  //   notifyListeners();
+  // } 
 }
-
-
-
