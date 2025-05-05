@@ -14,37 +14,33 @@ class OrderRequestProvider with ChangeNotifier {
   String? _successMessage;
   String? get successMessage => _successMessage;
 
-  Future<void> createOrder(OrderCreationRequest request,BuildContext context) async {
+  Future<void> createOrder(OrderCreationRequest request, BuildContext context) async {
     _setLoading(true);
-    _resetMessages(); 
+    _resetMessages();
 
+  
+    final result = await _orderRequestService.createOrder(request, context);
 
  
-    String? result = await _orderRequestService.createOrder(request,context);
-
     if (result == null) {
-     
-      _successMessage = "Order placed successfully!";
+
+      _errorMessage = "Failed to place the order. Please try again.";
     } else {
-    
-      _errorMessage = result;
+ 
+      _successMessage = "Order placed successfully!";
     }
 
     _setLoading(false);
-    notifyListeners(); 
+    notifyListeners();
   }
 
- 
   void _setLoading(bool isLoading) {
     _isLoading = isLoading;
-    notifyListeners(); 
+    notifyListeners();
   }
-
 
   void _resetMessages() {
     _errorMessage = null;
     _successMessage = null;
   }
 }
-
-
