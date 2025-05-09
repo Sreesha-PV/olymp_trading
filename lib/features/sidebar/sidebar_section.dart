@@ -1,13 +1,12 @@
-
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/features/drawer/sidebar_drawr/events_drawer.dart';
-import 'package:olymp_trade/features/drawer/sidebar_drawr/help_drawer.dart';
-import 'package:olymp_trade/features/drawer/sidebar_drawr/market_drawer.dart';
-import 'package:olymp_trade/features/drawer/sidebar_drawr/trades_drawer.dart';
-
-
+import 'package:olymp_trade/features/drawers/sidebar_drawer/events_drawer.dart';
+import 'package:olymp_trade/features/drawers/sidebar_drawer/help_drawer.dart';
+import 'package:olymp_trade/features/drawers/sidebar_drawer/market_drawer.dart';
+import 'package:olymp_trade/features/drawers/sidebar_drawer/trades_drawer.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:olymp_trade/features/provider/trade_badge_provider.dart';
+import 'package:provider/provider.dart';
 
 class Sidebar extends StatelessWidget {
   final Function(Widget) onItemSelected;
@@ -20,7 +19,6 @@ class Sidebar extends StatelessWidget {
     return isMobile ? _buildBottomSidebar(context) : _buildVerticalSidebar();
   }
 
-  /// **Web Sidebar (Vertical)**
   Widget _buildVerticalSidebar() {
     final List<Map<String, dynamic>> sidebarItems = [
       {
@@ -53,8 +51,12 @@ class Sidebar extends StatelessWidget {
         children: [
           const SizedBox(height: 90),
           ...sidebarItems.map((item) {
-            return Padding(
+           
+
+              return Padding(
               padding: const EdgeInsets.only(top: 40),
+
+              
               child: SidebarItem(
                 icon: item['icon'],
                 label: item['label'],
@@ -67,7 +69,6 @@ class Sidebar extends StatelessWidget {
     );
   }
 
-  /// **Mobile Sidebar (Bottom)**
   Widget _buildBottomSidebar(BuildContext context) {
     final List<Map<String, dynamic>> sidebarItems = [
       {
@@ -91,23 +92,53 @@ class Sidebar extends StatelessWidget {
         "index": 3,
       },
     ];
-
     return Container(
       height: 70,
       color: const Color.fromARGB(246, 17, 17, 17),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: sidebarItems.map((item) {
-          return SidebarItem(
-            icon: item['icon'],
-            label: item['label'],
-            onTap: () => _openBottomDrawer(context, item['index']),
-          );
+          if(item['label']=='Trades'){
+            return Consumer<TradeBadgeProvider>(
+              builder:(context,badgeProvider,_){
+                  return badges.Badge(
+              showBadge: badgeProvider.hasNewTrade,
+              position: badges.BadgePosition.topEnd(top: -8, end: -8),
+              badgeStyle: const badges.BadgeStyle(
+                badgeColor: Colors.red),
+              // badgeContent: const SizedBox(width: 6, height: 6),
+              badgeContent: const Text('1'),
+              child: SidebarItem(
+                icon: item['icon'],
+                label: item['label'],
+                onTap: () {
+                if (item['label'] == 'Trades') {
+                  Provider.of<TradeBadgeProvider>(context, listen: false).clearBadge();
+                }
+                _openBottomDrawer(context, item['index']);
+                }
+                ),
+              );
+              });
+          }else{
+            return SidebarItem(
+              icon: item['icon'], 
+              label: item['label'],
+              // onTap: () => onItemSelected(item['drawer']),
+              onTap: () {
+              if (item['label'] == 'Trades') {
+                Provider.of<TradeBadgeProvider>(context, listen: false).clearBadge();
+              }
+             onItemSelected(item['drawer']);
+            }
+           );
+              
+          } 
+       
         }).toList(),
       ),
     );
   }
-
   void _openBottomDrawer(BuildContext context, int index) {
     showModalBottomSheet(
       context: context,
@@ -165,10 +196,12 @@ class SidebarItem extends StatelessWidget {
           Icon(icon, color: const Color.fromARGB(255, 163, 185, 179), size: 24),
           Text(
             label,
-            style: const TextStyle(color: Color.fromARGB(255, 163, 185, 179), fontSize: 12),
+            style: const TextStyle(
+                color: Color.fromARGB(255, 163, 185, 179), fontSize: 12),
           ),
         ],
       ),
     );
   }
 }
+
