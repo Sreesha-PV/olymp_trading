@@ -1,6 +1,6 @@
 class ApiUrl{
   static const String baseUrl = 'https://bo.zebacus.com/backend/api/v1/';
-  static const String wsUrl = 'wss://bo.zebacus.com/notifier/ws/1023';
+  static const String wsUrl = 'wss://bo.zebacus.com/notifier/ws/1025';
 
   static const String register = '$baseUrl/client/account/register';
   static const String loginUrl = '$baseUrl/client/auth/login';
