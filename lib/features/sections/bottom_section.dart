@@ -520,3 +520,70 @@ class _DurationFieldState extends State<DurationField> {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+Widget _fixedAmountInputField(String label, BuildContext context) {
+  final tradeSettings = Provider.of<TradeSettingsProvider>(context);
+  final selectedAccountNotifier = Provider.of<SelectedAccountNotifier>(context);
+
+  double screenHeight = MediaQuery.of(context).size.height;
+  String currency = selectedAccountNotifier.currencySymbol;
+
+  return Container(
+    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 18),
+    height: screenHeight * 0.05,
+    decoration: BoxDecoration(
+      color: const Color.fromARGB(255, 24, 23, 23),
+      border: Border.all(color: Colors.grey[800]!),
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        GestureDetector(
+          onTap: tradeSettings.decreaseAmount,
+          child: Icon(Icons.remove, color: Colors.grey[700], size: 24),
+        ),
+        const SizedBox(width: 5),
+        SizedBox(
+          width: 80,
+          child: TextField(
+            controller: TextEditingController(
+              text: "$currency ${tradeSettings.amount}",
+            ),
+            style: const TextStyle(
+              color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              hintText: '0.0',
+              hintStyle: TextStyle(color: Colors.white),
+            ),
+            onChanged: (value) {
+              final clean = value.replaceAll(currency, '').trim();
+              final newAmount = double.tryParse(clean);
+              if (newAmount != null) {
+                tradeSettings.setAmount(newAmount);
+              }
+            },
+          ),
+        ),
+        const SizedBox(width: 5),
+        GestureDetector(
+          onTap: tradeSettings.increaseAmount,
+          child: Icon(Icons.add, color: Colors.grey[700], size: 24),
+        ),
+      ],
+    ),
+  );
+}  
