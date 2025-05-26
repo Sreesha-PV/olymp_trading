@@ -1,0 +1,294 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
+import 'package:olymp_trade/features/provider/dropdown_provider.dart';
+import 'package:provider/provider.dart';
+
+class ByTimePage extends StatelessWidget {
+  const ByTimePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController priceController = TextEditingController();
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                border: Border.all(color: AppColors.labelColor),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Profitability',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Consumer<ProfitabilityProvider>(
+                    builder: (context, model, child) {
+                      return DropdownButton<String>(
+                        value: model.selectedValue,
+                        isExpanded: true,
+                        icon: const Icon(CupertinoIcons.chevron_down),
+                        underline: const SizedBox.shrink(),
+                        onChanged: (String? newValue) {
+                          model.selectedValue = newValue ?? 'any';
+                        },
+                        items: <String>[
+                          'any',
+                          'from 70%',
+                          'from 80%',
+                          'from 90%'
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  _OpeningTimeField(
+                    label: 'Opening Time',
+                    controller: priceController,
+                  ),
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Text(
+                    'Your trade will be open today 13:00 if ',
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: Color.fromARGB(255, 230, 245, 247)),
+                  )
+                ],
+              ),
+            ),
+            const Row(
+              children: [
+                Text(
+                  'the profitability is 70% or higher ',
+                  style: TextStyle(
+                      fontSize: 11, color: Color.fromARGB(255, 230, 245, 247)),
+                )
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10, left: 6),
+              child: Row(
+                children: [
+                  Container(
+                    width: 220,
+                    height: 50,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: [
+                        Color.fromARGB(255, 76, 238, 238),
+                        Color.fromARGB(255, 74, 231, 43)
+                      ]),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Save",
+                          style: TextStyle(
+                              color: AppColors.background,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _OpeningTimeField extends StatefulWidget {
+  final String label;
+  final TextEditingController controller;
+
+  const _OpeningTimeField({
+    required this.label,
+    required this.controller,
+  });
+
+  @override
+  _OpeningPriceFieldState createState() => _OpeningPriceFieldState();
+}
+
+class _OpeningPriceFieldState extends State<_OpeningTimeField> {
+  final FocusNode _focusNode = FocusNode();
+  Color _borderColor = AppColors.borderColor;
+  Color _titleColor = AppColors.labelColor;
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(() {
+      setState(() {
+        if (_focusNode.hasFocus) {
+          _borderColor = AppColors.focusColor;
+          _titleColor = AppColors.success;
+        } else {
+          _borderColor = AppColors.borderColor;
+          _titleColor = AppColors.labelColor;
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          height: 50,
+          width: 225,
+          decoration: BoxDecoration(
+            border: Border.all(color: _borderColor),
+            borderRadius: BorderRadius.circular(10),
+           color: AppColors.bgColor,
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: _focusNode.hasFocus ? 0 : 16,
+                left: 10,
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 200),
+                  style: TextStyle(
+                    color: _titleColor,
+                    fontSize: 12,
+                  ),
+                  child: Text(widget.label),
+                ),
+              ),
+              Positioned.fill(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: TextFormField(
+                    focusNode: _focusNode,
+                    controller: widget.controller,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
+// Widget _iconButton(BuildContext context, IconData icon) {
+//   double screenHeight = MediaQuery.of(context).size.height;
+
+//   return GestureDetector(
+//     onTap: () {
+//       showModalBottomSheet(
+//         context: context,
+//         backgroundColor: AppColors.bgColor,
+//         shape: const RoundedRectangleBorder(
+//           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+//         ),
+//         builder: (context) {
+//           return _buildBottomDrawerContent(context);
+//         },
+//       );
+//     },
+//     child: Container(
+//       width: 50,
+//       padding: const EdgeInsets.all(12),
+//       height: screenHeight * 0.07,
+//       decoration: BoxDecoration(
+//         color: Colors.grey[900],
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       child: Icon(icon, color: AppColors.textColor, size: 24),
+//     ),
+//   );
+// }
+
+
+// Widget _buildBottomDrawerContent(BuildContext context) {
+//   return Container(
+    // padding: const EdgeInsets.all(16),
+    // child: Column(
+    //   mainAxisSize: MainAxisSize.min,
+    //   children: [
+    //     Container(
+    //       height: 4,
+    //       width: 40,
+    //       margin: const EdgeInsets.only(bottom: 12),
+    //       decoration: BoxDecoration(
+    //         color: Colors.grey,
+    //         borderRadius: BorderRadius.circular(2),
+    //       ),
+    //     ),
+    //     const Text(
+    //       'Select Expiry Time',
+    //       style: TextStyle(
+    //         fontSize: 18,
+    //         fontWeight: FontWeight.bold,
+    //         color: AppColors.textColor,
+    //       ),
+    //     ),
+    //     const SizedBox(height: 20),
+    //     ListTile(
+    //       title: const Text('1 Minute', style: TextStyle(color: AppColors.textColor)),
+    //       onTap: () {
+    //         Provider.of<TradeSettingsProvider>(context, listen: false).setMinutes(1);
+    //         Navigator.pop(context);
+    //       },
+    //     ),
+    //     ListTile(
+    //       title: const Text('3 Minutes', style: TextStyle(color: AppColors.textColor)),
+    //       onTap: () {
+    //         Provider.of<TradeSettingsProvider>(context, listen: false).setMinutes(3);
+    //         Navigator.pop(context);
+    //       },
+    //     ),
+    //     ListTile(
+    //       title: const Text('5 Minutes', style: TextStyle(color: AppColors.textColor)),
+    //       onTap: () {
+    //         Provider.of<TradeSettingsProvider>(context, listen: false).setMinutes(5);
+    //         Navigator.pop(context);
+    //       },
+    //     ),
+    //   ],
+    // ),
+//   );
+// }
