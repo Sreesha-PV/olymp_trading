@@ -215,3 +215,110 @@ class TopSection extends StatelessWidget {
 
 
 
+
+
+
+
+
+
+
+
+
+import 'package:flutter/material.dart';
+
+class PriceInputScreen extends StatefulWidget {
+  @override
+  _PriceInputScreenState createState() => _PriceInputScreenState();
+}
+
+class _PriceInputScreenState extends State<PriceInputScreen> {
+  String input = '';
+
+  void onKeyPress(String key) {
+    setState(() {
+      if (key == '←') {
+        if (input.isNotEmpty) input = input.substring(0, input.length - 1);
+      } else {
+        input += key;
+      }
+    });
+  }
+
+  Widget buildKey(String label) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onKeyPress(label),
+        child: Container(
+          margin: EdgeInsets.all(4),
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Center(
+            child: Text(
+              label,
+              style: TextStyle(color: Colors.white, fontSize: 24),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              'Opening Price',
+              style: TextStyle(color: Colors.greenAccent, fontSize: 16),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 10),
+              padding: EdgeInsets.all(12),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.greenAccent),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                input,
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
+
+            // Number Pad
+            ...[
+              ['1', '2', '3'],
+              ['4', '5', '6'],
+              ['7', '8', '9'],
+              ['.', '0', '←'],
+            ].map(
+              (row) => Row(
+                children: row.map(buildKey).toList(),
+              ),
+            ),
+
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                // Save action
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.greenAccent,
+                foregroundColor: Colors.black,
+                minimumSize: Size(double.infinity, 50),
+              ),
+              child: Text('Save'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
