@@ -322,3 +322,73 @@ class _PriceInputScreenState extends State<PriceInputScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
+class DateTimePickerDemo extends StatefulWidget {
+  @override
+  _DateTimePickerDemoState createState() => _DateTimePickerDemoState();
+}
+
+class _DateTimePickerDemoState extends State<DateTimePickerDemo> {
+  DateTime selectedDateTime = DateTime.now();
+
+  void _showPicker(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return SizedBox(
+          height: 250,
+          child: CupertinoDatePicker(
+            mode: CupertinoDatePickerMode.dateAndTime,
+            initialDateTime: selectedDateTime,
+            onDateTimeChanged: (DateTime newDateTime) {
+              setState(() {
+                selectedDateTime = newDateTime;
+              });
+            },
+            use24hFormat: true,
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Date & Time Picker")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "Selected: ${selectedDateTime.toLocal()}",
+              style: TextStyle(fontSize: 16),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () => _showPicker(context),
+              child: Text("Pick Date & Time"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
