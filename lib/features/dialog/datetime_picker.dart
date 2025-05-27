@@ -364,3 +364,78 @@ class _TimeSelectionScreenState extends State<TimeSelectionScreen> {
 }
 
 
+
+
+
+void _showTimePickerSheet() {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.black,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (_) {
+      return Container(
+        height: 300,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                children: [
+                  // Day picker (Today, Tomorrow)
+                  Expanded(
+                    child: CupertinoPicker(
+                      backgroundColor: Colors.black,
+                      itemExtent: 32,
+                      scrollController: FixedExtentScrollController(
+                          initialItem: days.indexOf(selectedDay)),
+                      onSelectedItemChanged: (index) {
+                        setState(() {
+                          selectedDay = days[index];
+                        });
+                      },
+                      children: days
+                          .map((day) => Center(
+                                child: Text(day,
+                                    style: const TextStyle(color: Colors.white)),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                  // Time picker
+                  Expanded(
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.time,
+                      use24hFormat: true,
+                      initialDateTime: _buildInitialDateTime(),
+                      onDateTimeChanged: (newDateTime) {
+                        setState(() {
+                          selectedTime =
+                              TimeOfDay.fromDateTime(newDateTime);
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.greenAccent,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('Save'),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
