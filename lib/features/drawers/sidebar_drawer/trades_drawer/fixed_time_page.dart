@@ -1,83 +1,82 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:olymp_trade/features/model/order_get_model.dart';
 import 'package:olymp_trade/features/model/trade_history_model.dart';
 import 'package:olymp_trade/features/provider/tradesocket_provider.dart';
 import 'package:provider/provider.dart';
 
 class FixedTimePage extends StatelessWidget {
-  const FixedTimePage({super.key});
- 
+   FixedTimePage({super.key});
 
   String _formatDuration(int seconds) {
-    int minutes = seconds ~/ 60;
-    int remainingSeconds = seconds % 60;
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
-  Stream<int> _timerStream(
-    int startDuration,
-    OrderGet order,
-    TradeSocketProvider socketProvider,
-    BuildContext context,
-  )
-  {
+  Stream<int> _timerStream(int duration, OrderGet order) {
     return Stream.periodic(const Duration(seconds: 1), (tick) {
-      int remainingTime = startDuration - tick - 1;
-      if (remainingTime <= 0) {
-        // showTradeExpiredDialog(context);
-      }
-      return remainingTime < 0 ? 0 : remainingTime;
+      final remaining = duration - tick - 1;
+      return remaining < 0 ? 0 : remaining;
     });
   }
-  // void _showTradeExpiredDialog(BuildContext context) {
-  //   showDialog(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (BuildContext context) {
-  //       return AlertDialog(
-  //         title: const Text('Trade Expired'),
-  //         content: const Text('The trade has expired and moved to history.'),
-  //         actions: <Widget>[
-  //           TextButton(
-  //             onPressed: () {
-  //               Navigator.of(context).pop();
-  //             },
-  //             child: const Text('OK'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
 
+//   Stream<int> _timerStream(OrderGet order) {
+//   int remainingSeconds = order.getRemainingTime().inSeconds;
+
+//   return Stream.periodic(const Duration(seconds: 1), (tick) {
+//     int updatedRemaining = remainingSeconds - tick;
+//     return updatedRemaining < 0 ? 0 : updatedRemaining;
+//   });
+// }
+
+
+// Stream<int> _timerStream(DateTime expiryTime) {
+//   return Stream.periodic(const Duration(seconds: 1), (_) {
+//     final now = DateTime.now();
+//     final remaining = expiryTime.difference(now).inSeconds;
+//     return remaining > 0 ? remaining : 0;
+//   }).takeWhile((remaining) => remaining >= 0);
+// }
+
+  void _showTradeExpiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text('Trade Expired'),
+        content: const Text('The trade has expired and moved to history.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-           
-
-
     return Drawer(
-      backgroundColor: const Color.fromARGB(255, 24, 23, 23),
+      backgroundColor: AppColors.bgColor,
       child: Consumer<TradeSocketProvider>(
-          
         builder: (context, socketProvider, _) {
-          print('[UI] Rebuilding Active Orders: ${socketProvider.activeOrders.length}');
-
           return ListView(
             padding: const EdgeInsets.only(left: 15),
             children: [
-              _buildActiveTradesSection(socketProvider, context),
+              _buildActiveTradesSection(socketProvider),
               _buildTradeHistorySection(socketProvider),
             ],
           );
         },
       ),
     );
+  } 
 
-}
-  Widget _buildActiveTradesSection(
-     TradeSocketProvider socketProvider, BuildContext context) {
+  Widget _buildActiveTradesSection(TradeSocketProvider socketProvider) {
     return Column(
       children: [
         const Padding(
@@ -85,7 +84,7 @@ class FixedTimePage extends StatelessWidget {
           child: Text(
             'Active Trades',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.textColor,
               fontWeight: FontWeight.bold,
               fontSize: 24,
             ),
@@ -95,7 +94,10 @@ class FixedTimePage extends StatelessWidget {
         if (socketProvider.activeOrders.isEmpty)
           ..._buildNoActiveTradesSection()
         else
-          _buildActiveOrdersList(socketProvider, context),
+          _buildActiveOrdersList(socketProvider),
+        // socketProvider.activeOrders.isEmpty
+        //     ? ..._buildNoActiveTradesSection()
+        //     : _buildActiveOrdersList(socketProvider),
       ],
     );
   }
@@ -108,22 +110,10 @@ class FixedTimePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                CupertinoIcons.arrow_up,
-                size: 80,
-                color: Colors.grey[800],
-              ),
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                CupertinoIcons.arrow_down,
-                size: 80,
-                color: Colors.grey[800],
-              ),
-            ),
+            Icon(CupertinoIcons.arrow_up,
+                size: 80, color: AppColors.borderColor),
+            Icon(CupertinoIcons.arrow_down,
+                size: 80, color: AppColors.borderColor),
           ],
         ),
       ),
@@ -132,131 +122,92 @@ class FixedTimePage extends StatelessWidget {
         padding: EdgeInsets.all(10),
         child: Text(
           'You have no open Fixed Time trades on this account',
-          style: TextStyle(
-            color: Color.fromARGB(255, 230, 245, 247),
-            fontSize: 15,
-          ),
+          style: TextStyle(color: AppColors.textColor, fontSize: 15),
         ),
       ),
       const SizedBox(height: 20),
       Padding(
         padding: const EdgeInsets.all(8),
-        child: Row(
-          children: [
-            Container(
-              height: 50,
-              width: 250,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.grey[800],
-              ),
-              child: TextButton(
-                onPressed: () {},
-                child: const Text(
-                  'Explore Assets',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
+        child: Container(
+          height: 50,
+          width: 250,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: AppColors.borderColor,
+          ),
+          child: TextButton(
+            onPressed: () {},
+            child: const Text('Explore Assets',
+                style: TextStyle(color: AppColors.textColor)),
+          ),
         ),
       ),
     ];
   }
-  // List<Widget> _buildActiveOrdersList(
-  Widget _buildActiveOrdersList(
-  TradeSocketProvider socketProvider, BuildContext context) {
+
+  Widget _buildActiveOrdersList(TradeSocketProvider socketProvider) {
+    final orders =
+        socketProvider.activeOrders.where((o) => o.id.isNotEmpty).toList();
     
-    final validOrders = socketProvider.activeOrders.where((o) => o.id.isNotEmpty).toList();
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: orders.length,
+      itemBuilder: (context, index) {
+        final order = orders[index];
+        final createdAt = DateTime.fromMillisecondsSinceEpoch(order.createdAt * 1000); // ensure in milliseconds
+        final expiryTime = createdAt.add(Duration(minutes: order.orderDuration!));
+       
 
-
-    print('[UI] Active Orders Length: ${socketProvider.activeOrders.length}');
-    for (var order in socketProvider.activeOrders) {
-      print('[UI] Order ID: ${order.id}, Symbol: ${order.symbol}, Duration: ${order.orderDuration}, Amount:${order.amount}');
-    }
-
-    return 
-      ListView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        itemCount: socketProvider.activeOrders.length,
-        itemBuilder: (context, index) {
-          final order = socketProvider.activeOrders[index];
-          
-          // final order = socketProvider.activeOrders.where((o) => o.id != null && o.id.isNotEmpty).toList();
-
-          return Padding(
-            padding: const EdgeInsets.all(8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[900],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ListTile(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${order.symbol}',
-                      style: const TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                    const SizedBox(width: 10),
-                    // Text(
-                    //     _formatRemainingTime(order),
-                    //     style: const TextStyle(color: Colors.grey, fontSize: 14),
-                    //   ),
-
-                    StreamBuilder<int>(
-                      stream: _timerStream(order.orderDuration! * 60, order,
-                          socketProvider,context),
-                
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const CircularProgressIndicator();
-                        } else if (snapshot.hasData) {
-                          return Text(
-                            _formatDuration(snapshot.data!),
-                            // _formatDuration(order.getRemainingTime().inSeconds),
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 14),
-                          );
-                        } else {
-                          return const Text(
-                            '00:00',
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          );
-                          
-                        }
-                      },
-                    ),
-                  ],
-                ),
-                subtitle: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Ð ${order.amount}',
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      '${order.strikePrice}',
-                      style: const TextStyle(
-                          color: Colors.red, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ), 
-                onTap: () {},
-              ),
+        return Padding(
+          padding: const EdgeInsets.all(8),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              borderRadius: BorderRadius.circular(8),
             ),
-          );
-        },
-      ); 
-    }
+            child: ListTile(
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(order.symbol,
+                      style:
+                          TextStyle(color: AppColors.labelColor, fontSize: 14)),
+                  StreamBuilder<int>(
+                    stream: _timerStream(order.orderDuration! * 60, order),
+                    // stream: _timerStream(order),
+                    // stream: getTimerStream(order),
 
-
+                    builder: (_, snapshot) {
+                      final time = snapshot.hasData
+                          ? _formatDuration(snapshot.data!)
+                          : '00:00';
+                      return Text(time,
+                          style: TextStyle(
+                              color: AppColors.labelColor, fontSize: 14));
+                    },
+                  ),
+                ],
+              ),
+              subtitle: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Ð ${order.amount}',
+                      style: const TextStyle(
+                          color: AppColors.textColor,
+                          fontWeight: FontWeight.bold)),
+                  Text('${order.strikePrice}',
+                      style: const TextStyle(
+                          color: AppColors.error, fontWeight: FontWeight.bold)),
+                ],
+              ),
+              onTap: () {},
+            ),
+          ),
+        );
+      },
+    );
+  }
   Widget _buildTradeHistorySection(TradeSocketProvider socketProvider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +217,7 @@ class FixedTimePage extends StatelessWidget {
           child: Text(
             'History',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.textColor,
               fontWeight: FontWeight.bold,
               fontSize: 24,
             ),
@@ -274,11 +225,11 @@ class FixedTimePage extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         if (socketProvider.tradeHistory.isEmpty)
-          const Padding(
-            padding: EdgeInsets.all(10),
+          Padding(
+            padding: const EdgeInsets.all(10),
             child: Text(
               'No trade history available.',
-              style: TextStyle(color: Colors.grey, fontSize: 16),
+              style: TextStyle(color: AppColors.labelColor, fontSize: 16),
             ),
           )
         else
@@ -286,74 +237,56 @@ class FixedTimePage extends StatelessWidget {
       ],
     );
   }
-
   List<Widget> _buildTradeHistoryList(List<TradeHistory> history) {
-
     return [
       ListView.builder(
         shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
         itemCount: history.length,
-        itemBuilder: (context, index) {
+        itemBuilder: (_, index) {
           final trade = history[index];
-          // DateTime tradeTime = DateTime.fromMillisecondsSinceEpoch(trade.timestamp! * 1000);
-          DateTime tradeTime = DateTime.fromMillisecondsSinceEpoch(
-            (trade.timestamp ??
+          final tradeTime = DateTime.fromMillisecondsSinceEpoch(
+            ((trade.timestamp ??
                     trade.orderExecutedTimestamp ??
                     trade.orderPlacedTimestamp ??
                     DateTime.now().millisecondsSinceEpoch ~/ 1000) *
-                1000,
+                1000),
           );
+          
+          final timeStr = '${tradeTime.minute} min';
 
-          String formattedTime = '${tradeTime.minute} min';
-          // print(
-          //     '[UI] TradeHistory - Profit: ${trade.profit}, Loss: ${trade.loss}');
           return Padding(
             padding: const EdgeInsets.all(8),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey[900],
+                color: AppColors.cardBackground,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: ListTile(
                 title: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '${trade.symbol}',
-                      style: const TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      formattedTime,
-                      style: const TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
+                    Text('${trade.symbol}',
+                        style: TextStyle(
+                            color: AppColors.labelColor, fontSize: 14)),
+                    Text(timeStr,
+                        style: TextStyle(
+                            color: AppColors.labelColor, fontSize: 14)),
                   ],
                 ),
                 subtitle: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Ð ${trade.amount}',
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 10),
+                    Text('Ð ${trade.amount}', style: const TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold)),
                     Row(
                       children: [
-                        Text(
-                          '+Ð${trade.profit ?? 0}',
-                          style: const TextStyle(
-                              color: Colors.green, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          '/ -Ð${trade.loss ?? 0}',
-                          style: const TextStyle(
-                              color: Colors.red, fontWeight: FontWeight.bold),
-                        ),
+                        Text('+Ð${trade.profit ?? 0}', style: const TextStyle(color: AppColors.success, fontWeight: FontWeight.bold)),
+                        Text(' / -Ð${trade.loss ?? 0}', style: const TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ],
                 ),
+
                 onTap: () {},
               ),
             ),
@@ -363,6 +296,3 @@ class FixedTimePage extends StatelessWidget {
     ];
   }
 }
-
-
-

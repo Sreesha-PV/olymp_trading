@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:olymp_trade/constants.dart';
+import 'package:olymp_trade/core/constants/urls.dart';
 import 'package:olymp_trade/features/model/order_get_model.dart';
 import 'package:olymp_trade/features/model/trade_history_model.dart';
+import 'package:olymp_trade/features/provider/order_provider.dart';
 import 'package:olymp_trade/services/order_get_services.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 // const int activeOrderStatus =2;
@@ -13,7 +15,8 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class TradeSocketProvider with ChangeNotifier {
 
   final OrderGetServices _orderService = OrderGetServices();
-  late final WebSocketChannel _channel;
+  // late final WebSocketChannel _channel;
+  WebSocketChannel? _channel ;
   List<OrderGet> _activeOrders = [];
   List<TradeHistory> _tradeHistory = [];
   Map<String, Timer> _orderTimers = {};
@@ -23,17 +26,13 @@ class TradeSocketProvider with ChangeNotifier {
   List<TradeHistory> get tradeHistory => _tradeHistory;
   bool get isLoading => _isLoading;
 
-
   Future<void> fetchActiveOrders() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-
     _activeOrders = await _orderService.getOrdersByStatus(2);
       print('[Provider] Fetched ${_activeOrders.length} active orders');    
-      
-
     } catch (e) {
       print('[Provider] Error fetching active orders: $e');
     } finally {
@@ -41,23 +40,23 @@ class TradeSocketProvider with ChangeNotifier {
       notifyListeners();
     }
   } 
-
-
   void clearOrders() {
     _activeOrders = [];
     notifyListeners();
   }
+  final OrderProvider orderProvider;
 
-  TradeSocketProvider() {
+  TradeSocketProvider(this.orderProvider) {
     _connectWebSocket();
   }
 
-  void _connectWebSocket() {
+ void _connectWebSocket() {
+    _channel?.sink.close();
     _channel = WebSocketChannel.connect(
       Uri.parse(ApiUrl.wsUrl),
     );
 
-    _channel.stream.listen(
+    _channel!.stream.listen(
     (data) {
     print('[WebSocket] Received: $data');
     try {
@@ -74,7 +73,6 @@ class TradeSocketProvider with ChangeNotifier {
             print('[WebSocket] Skipping duplicate active order :$newOrderId');
             return;
         }
-
 
         final order = OrderGet.fromJson({
           'order_id': json['order_id'],
@@ -118,7 +116,7 @@ class TradeSocketProvider with ChangeNotifier {
 
         notifyListeners();
       }
-    } catch (e) {
+      } catch (e) {
       print('[WebSocket] Error parsing message: $e');
     }
   },
@@ -132,7 +130,6 @@ class TradeSocketProvider with ChangeNotifier {
 );
 }
 
-
   void _startOrderTimer(OrderGet order) {
     Duration remainingTime = order.getRemainingTime();
 
@@ -143,13 +140,14 @@ class TradeSocketProvider with ChangeNotifier {
         timer.cancel();
         _orderTimers.remove(order.id);
         _moveOrderToHistory(order);
+
+
       }
       notifyListeners();
     });
 
     _orderTimers[order.id] = timer;
   }
-
 
 void _moveOrderToHistory(OrderGet order) {
   if (_tradeHistory.any((t) => t.orderId == order.id)) {
@@ -173,17 +171,11 @@ void _moveOrderToHistory(OrderGet order) {
   notifyListeners();
 }
 
-// void removeExpiredOrder(String orderId) {
-//   activeOrders.removeWhere((order) => order.id == orderId);
-//   notifyListeners();
-// }
-
-
-  @override
+ @override
   void dispose() {
-    _channel.sink.close();
+    _channel?.sink.close();
     _orderTimers.values.forEach((timer) => timer.cancel());
     super.dispose();
   }
 }
-
+// 

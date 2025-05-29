@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 
 class MarketDrawer extends StatelessWidget {
   const MarketDrawer({super.key});
@@ -7,7 +8,7 @@ class MarketDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       width: 340,
-      backgroundColor: const Color.fromARGB(255, 24, 23, 23),
+      backgroundColor: AppColors.bgColor,
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -18,7 +19,7 @@ class MarketDrawer extends StatelessWidget {
                   const Text(
                     'Market',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 30),
                   ),
@@ -28,31 +29,31 @@ class MarketDrawer extends StatelessWidget {
                     icon: const Icon(
                       Icons.info_outline,
                     ),
-                    color: Colors.white,
+                    color: AppColors.textColor,
                   ),
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.close),
-                    color: Colors.white,
+                    color: AppColors.textColor,
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 20),
             Card(
-              color: Colors.grey[800],
+              color: AppColors.borderColor,
               child: const ListTile(
                 title: Text(
                   'My Purchases & Rewards',
                   style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                      color: AppColors.textColor, fontWeight: FontWeight.bold),
                 ),
                 trailing: Icon(
                   Icons.arrow_forward_ios,
                   size: 12,
-                  color: Colors.white,
+                  color: AppColors.textColor,
                 ),
               ),
             ),
@@ -68,20 +69,20 @@ class MarketDrawer extends StatelessWidget {
                   ]),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 150,
                       ),
-                      Row(
+                      const Row(
                         children: [
                           Text(
                             'Trading Conditions',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -92,7 +93,7 @@ class MarketDrawer extends StatelessWidget {
                           Text(
                             'Features that provide more ',
                             style: TextStyle(
-                                color: Colors.grey,
+                                color: AppColors.labelColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),
@@ -102,7 +103,7 @@ class MarketDrawer extends StatelessWidget {
                         children: [
                           Text('beneficial trading conditions',
                               style: TextStyle(
-                                  color: Colors.grey,
+                                  color:AppColors.labelColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16))
                         ],
@@ -123,20 +124,20 @@ class MarketDrawer extends StatelessWidget {
                   ]),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 150,
                       ),
-                      Row(
+                      const Row(
                         children: [
                           Text(
                             'Signals',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -147,7 +148,7 @@ class MarketDrawer extends StatelessWidget {
                           Text(
                             'Algorithm-based recommendations',
                             style: TextStyle(
-                                color: Colors.grey,
+                                color: AppColors.labelColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),
@@ -157,7 +158,7 @@ class MarketDrawer extends StatelessWidget {
                         children: [
                           Text('on when to open trades',
                               style: TextStyle(
-                                  color: Colors.grey,
+                                  color: AppColors.labelColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16))
                         ],
@@ -179,20 +180,20 @@ class MarketDrawer extends StatelessWidget {
                       ],
                     ),
                     borderRadius: BorderRadius.circular(12)),
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 130,
                       ),
-                      Row(
+                      const Row(
                         children: [
                           Text(
                             'Strategies',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -203,7 +204,7 @@ class MarketDrawer extends StatelessWidget {
                           Text(
                             'Ready-to-use sets of tools that ',
                             style: TextStyle(
-                                color: Colors.grey,
+                                color:AppColors.labelColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),
@@ -213,7 +214,7 @@ class MarketDrawer extends StatelessWidget {
                         children: [
                           Text('make it easier to spot entry and exit',
                               style: TextStyle(
-                                  color: Colors.grey,
+                                  color:AppColors.labelColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16))
                         ],
@@ -222,7 +223,7 @@ class MarketDrawer extends StatelessWidget {
                         children: [
                           Text('points',
                               style: TextStyle(
-                                  color: Colors.grey,
+                                  color: AppColors.labelColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16))
                         ],
@@ -242,20 +243,20 @@ class MarketDrawer extends StatelessWidget {
                       Color.fromARGB(255, 118, 224, 127),
                     ]),
                     borderRadius: BorderRadius.circular(12)),
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 130,
                       ),
-                      Row(
+                      const Row(
                         children: [
                           Text(
                             'Indicators',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -266,7 +267,7 @@ class MarketDrawer extends StatelessWidget {
                           Text(
                             'Ready-to-use sets of tools that ',
                             style: TextStyle(
-                                color: Colors.grey,
+                                color: AppColors.labelColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),
@@ -276,7 +277,7 @@ class MarketDrawer extends StatelessWidget {
                         children: [
                           Text('make it easier to spot entry and exit',
                               style: TextStyle(
-                                  color: Colors.grey,
+                                  color: AppColors.labelColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16))
                         ],
@@ -285,7 +286,7 @@ class MarketDrawer extends StatelessWidget {
                         children: [
                           Text('points',
                               style: TextStyle(
-                                  color: Colors.grey,
+                                  color: AppColors.labelColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16))
                         ],

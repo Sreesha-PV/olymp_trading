@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 
 class EventsDrawer extends StatelessWidget {
   const EventsDrawer({
@@ -9,8 +10,8 @@ class EventsDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color.fromARGB(255, 24, 23, 23),
-
+      // backgroundColor: const Color.fromARGB(255, 24, 23, 23),
+      backgroundColor: AppColors.bgColor,
       child: ListView(
         padding: const EdgeInsets.only(left: 15),
         children: [
@@ -21,7 +22,7 @@ class EventsDrawer extends StatelessWidget {
                 child: Text(
                   'Events',
                   style: TextStyle(
-                      color: Colors.white,
+                      color:AppColors.textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 26),
                 ),
@@ -33,7 +34,7 @@ class EventsDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.close),
-                color: Colors.white,
+                color: AppColors.textColor,
               ),
             ],
           ),
@@ -43,7 +44,7 @@ class EventsDrawer extends StatelessWidget {
             child: Container(
               height: 260,
               decoration: BoxDecoration(
-                  color: Colors.black, borderRadius: BorderRadius.circular(12)),
+                  color: AppColors.background, borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: SingleChildScrollView(
@@ -60,7 +61,7 @@ class EventsDrawer extends StatelessWidget {
                           Text(
                             'Welcome to ',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20),
                           ),
@@ -71,7 +72,7 @@ class EventsDrawer extends StatelessWidget {
                           Text(
                             'Olymptrade',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20),
                           )
@@ -80,12 +81,12 @@ class EventsDrawer extends StatelessWidget {
                       const SizedBox(
                         height: 50,
                       ),
-                      const Column(
+                      Column(
                         children: [
                           Text(
                             'Ends on',
                             style: TextStyle(
-                                color: Colors.grey,
+                                color: AppColors.labelColor,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold),
                           ),
@@ -96,7 +97,7 @@ class EventsDrawer extends StatelessWidget {
                           const Text(
                             'May 1',
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppColors.textColor,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
                           ),

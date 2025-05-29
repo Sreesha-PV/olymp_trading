@@ -37,15 +37,12 @@ class UserProvider extends ChangeNotifier {
       print('Error fetching user data: $e');
     }
   } 
- 
+
   void clearUser(){
     _email = '';
     _name = '';
     _userId = '';
     _uuid = '';
     _isLoading = false;
-  }
-
-  
-}
-
+  } 
+}  

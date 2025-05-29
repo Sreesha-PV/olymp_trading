@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 
 void showInsufficientFundsDialog(BuildContext context) {
   showDialog(
@@ -7,9 +8,9 @@ void showInsufficientFundsDialog(BuildContext context) {
       return AlertDialog(
         alignment: Alignment.topRight,
         title: const Text("You don't have enough funds"),
-        content: const Text(
+        content: Text(
           "Deposit to your trading account to open a trade",
-          style: TextStyle(color: Colors.grey),
+          style: TextStyle(color: AppColors.labelColor),
         ),
         actions: [
           GestureDetector(
@@ -32,7 +33,7 @@ void showInsufficientFundsDialog(BuildContext context) {
               child: const Text(
                 'Deposit',
                 style: TextStyle(
-                  color: Colors.black,
+                  color: AppColors.background,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),

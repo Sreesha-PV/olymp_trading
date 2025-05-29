@@ -6,6 +6,7 @@ import 'package:olymp_trade/features/provider/drawer_provider.dart';
 import 'package:olymp_trade/features/provider/dropdown_provider.dart';
 import 'package:olymp_trade/features/provider/enable_order_provider.dart';
 import 'package:olymp_trade/features/provider/orderrequest_provider.dart';
+import 'package:olymp_trade/features/provider/trade_badge_provider.dart';
 import 'package:olymp_trade/features/provider/tradesettings_provider.dart';
 import 'package:olymp_trade/features/provider/order_provider.dart';
 import 'package:olymp_trade/features/provider/selected_account_provider.dart';
@@ -14,7 +15,6 @@ import 'package:olymp_trade/features/provider/tabbar_provider.dart';
 import 'package:olymp_trade/features/provider/tradesocket_provider.dart';
 import 'package:olymp_trade/features/provider/user_provider.dart';
 import 'package:olymp_trade/features/trading/trade_screen.dart';
-// import 'package:olymp_trade/features/trading/trade_screen.dart';
 import 'package:olymp_trade/services/account_details_services.dart';
 import 'package:olymp_trade/services/auth_service.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +36,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DrawerProvider()),
         ChangeNotifierProvider(create: (_) => TabVisibilityProvider()),
         ChangeNotifierProvider(create: (_) => OrderProvider()),
-        ChangeNotifierProvider(create: (_)=>TradeSocketProvider()),
+        // ChangeNotifierProvider(create: (_)=>TradeSocketProvider()),
+        ChangeNotifierProvider(
+          create: (context) => TradeSocketProvider(Provider.of<OrderProvider>(context, listen: false)),
+        ),
+
         ChangeNotifierProvider(create: (_)=>EnableOrderProvider()),
         ChangeNotifierProvider(create: (_) => ProfitabilityProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
@@ -47,16 +51,29 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
             create: (_) => UserProvider(AccountDetailsServices())),
         ChangeNotifierProvider(create: (_) => TradeSettingsProvider()),
-        ChangeNotifierProvider(create: (_) => BalanceProvider())
+        ChangeNotifierProvider(create: (_) => BalanceProvider()),
+        ChangeNotifierProvider(create: (_)=>TradeBadgeProvider()),
+  
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData.dark(),
-        home: const AuthScreen(),
-        // home: TradeScreen(),
-       
+        // theme: ThemeData(
+        //   brightness: Brightness.light,
+        //   primarySwatch: Colors.teal
+        // ),
+        // darkTheme: ThemeData(
+        //   brightness: Brightness.dark,
+        //   primarySwatch: Colors.teal
+        // ),
+        // home: const AuthScreen(),
+        home: TradeScreen(),
       ),
     );
   }
 }
+
+// 
+
+

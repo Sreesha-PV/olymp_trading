@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import 'package:olymp_trade/features/authentication/authentication_screen.dart';
 import 'package:olymp_trade/features/provider/user_provider.dart';
@@ -19,7 +20,7 @@ class ProfileDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       width: 360,
-      backgroundColor: const Color.fromARGB(255, 26, 25, 25),
+     backgroundColor: AppColors.bgColor,
       child: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
           if (userProvider.isLoading) {
@@ -37,24 +38,24 @@ class ProfileDrawer extends StatelessWidget {
                   IconButton(
                     onPressed: () {},
                     icon: const Icon(Icons.notifications_none),
-                    color: Colors.white,
+                    color: AppColors.textColor,
                   ),
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.close),
-                    color: Colors.white,
+                    color: AppColors.textColor,
                   ),
                 ],
               ),
               const SizedBox(height: 50),
               CircleAvatar(
                 radius: 40,
-                backgroundColor: Colors.grey[850],
+                backgroundColor: AppColors.fillColor,
                 child: const Icon(
                   CupertinoIcons.person,
-                  color: Colors.white,
+                  color: AppColors.textColor,
                   size: 30,
                 ),
               ),
@@ -64,7 +65,7 @@ class ProfileDrawer extends StatelessWidget {
                     ? 'No Name available'
                     : userProvider.name,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textColor,
                   fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
@@ -75,7 +76,7 @@ class ProfileDrawer extends StatelessWidget {
                     ? 'No Email available'
                     : userProvider.email,
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textColor,
                   fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
@@ -86,7 +87,7 @@ class ProfileDrawer extends StatelessWidget {
                 width: 100,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  color: Colors.grey[800],
+                  color: AppColors.borderColor,
                 ),
                 child: TextButton(
                   onPressed: (){
@@ -100,7 +101,7 @@ class ProfileDrawer extends StatelessWidget {
                   child: const Text(
                     'Logout',
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppColors.textColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 14),
                   ),

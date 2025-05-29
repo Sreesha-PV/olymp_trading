@@ -20,7 +20,6 @@ class UserData {
     data['user_uuid'] = userUuid;
     data['email'] = email;
     data['name'] = name;
-
     return data;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 
 class HelpDrawer extends StatelessWidget {
   const HelpDrawer({super.key});
@@ -8,7 +9,7 @@ class HelpDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       width: 320,
-      backgroundColor: const Color.fromARGB(255, 24, 23, 23),
+      backgroundColor: AppColors.bgColor,
       child: ListView(padding: const EdgeInsets.only(left: 15), children: [
         Padding(
           padding: const EdgeInsets.only(top: 12),
@@ -17,7 +18,7 @@ class HelpDrawer extends StatelessWidget {
               const Text(
                 'Help',
                 style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 30),
               ),
@@ -27,7 +28,7 @@ class HelpDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.close),
-                color: Colors.white,
+                color: AppColors.textColor,
               ),
             ],
           ),
@@ -42,23 +43,23 @@ class HelpDrawer extends StatelessWidget {
                   height: 140,
                   width: 140,
                   decoration: BoxDecoration(
-                      color: Colors.grey[850],
+                      color: AppColors.fillColor,
                       borderRadius: BorderRadius.circular(12)),
-                  child: const Padding(
-                    padding: EdgeInsets.all(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.help_outline),
-                          SizedBox(height: 20),
-                          Text('Support',
+                          const Icon(Icons.help_outline),
+                          const SizedBox(height: 20),
+                          const Text('Support',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14)),
                           Row(
                             children: [
                               Text('We are here for you ',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],
@@ -67,7 +68,7 @@ class HelpDrawer extends StatelessWidget {
                             children: [
                               Text('24/7 ',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],
@@ -82,23 +83,23 @@ class HelpDrawer extends StatelessWidget {
                   height: 140,
                   width: 140,
                   decoration: BoxDecoration(
-                      color: Colors.grey[850],
+                      color:AppColors.fillColor,
                       borderRadius: BorderRadius.circular(12)),
-                  child: const Padding(
-                    padding: EdgeInsets.all(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.info_outline),
-                          SizedBox(height: 20),
-                          Text('Help Center',
+                          const Icon(Icons.info_outline),
+                          const SizedBox(height: 20),
+                          const Text('Help Center',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14)),
                           Row(
                             children: [
                               Text('Get to know ',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],
@@ -107,7 +108,7 @@ class HelpDrawer extends StatelessWidget {
                             children: [
                               Text('the platform ',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],
@@ -129,23 +130,23 @@ class HelpDrawer extends StatelessWidget {
                   height: 140,
                   width: 140,
                   decoration: BoxDecoration(
-                      color: Colors.grey[850],
+                      color: AppColors.fillColor,
                       borderRadius: BorderRadius.circular(12)),
-                  child: const Padding(
-                    padding: EdgeInsets.all(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.cast_for_education),
-                          SizedBox(height: 20),
-                          Text('Education',
+                          const Icon(Icons.cast_for_education),
+                          const SizedBox(height: 20),
+                          const Text('Education',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14)),
                           Row(
                             children: [
                               Text('Expand your ',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],
@@ -154,7 +155,7 @@ class HelpDrawer extends StatelessWidget {
                             children: [
                               Text('Knowledge ',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],
@@ -169,23 +170,23 @@ class HelpDrawer extends StatelessWidget {
                   height: 140,
                   width: 140,
                   decoration: BoxDecoration(
-                      color: Colors.grey[850],
+                      color: AppColors.labelColor,
                       borderRadius: BorderRadius.circular(12)),
-                  child: const Padding(
-                    padding: EdgeInsets.all(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(CupertinoIcons.graph_square),
-                          SizedBox(height: 20),
-                          Text('Trading Tutorials',
+                          const Icon(CupertinoIcons.graph_square),
+                          const SizedBox(height: 20),
+                          const Text('Trading Tutorials',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 14)),
                           Row(
                             children: [
                               Text('Learn how ',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],
@@ -194,7 +195,7 @@ class HelpDrawer extends StatelessWidget {
                             children: [
                               Text('to open a trade',
                                   style: TextStyle(
-                                      color: Colors.grey,
+                                      color: AppColors.labelColor,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 12)),
                             ],

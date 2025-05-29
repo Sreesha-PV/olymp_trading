@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:olymp_trade/constants.dart';
+import 'package:olymp_trade/core/constants/urls.dart';
 import 'package:olymp_trade/features/model/balance_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,14 +15,14 @@ class BalanceService {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
+  
   Future<Balance> fetchBalance() async {
     final String? token = await getToken();
-
+ 
     if (token == null) {
-      throw Exception("Token is missing or expired.");
+      // throw Exception("Token is missing or expired.");
     }
     final url = Uri.parse(ApiUrl.balance);
-    // final url = Uri.parse('https://bo.zebacus.com/backend/api/v1/wallets/balance');
     try {
       final response = await http.get(
         url,

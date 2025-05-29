@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:provider/provider.dart';
 import '../provider/balance_provider.dart';
 import '../provider/selected_account_provider.dart';
@@ -19,6 +20,7 @@ class AccountDrawer extends StatefulWidget {
 
 class _AccountDrawerState extends State<AccountDrawer> {
   List<int> _expandedAccounts = [];
+  
 
   void _toggleExpansion(int index) {
     setState(() {
@@ -29,12 +31,11 @@ class _AccountDrawerState extends State<AccountDrawer> {
       }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return Drawer(
       width: 360,
-      backgroundColor: const Color.fromARGB(255, 26, 25, 25),
+      backgroundColor: AppColors.bgColor,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
@@ -48,7 +49,8 @@ class _AccountDrawerState extends State<AccountDrawer> {
                 if (balanceProvider.balance == null &&
                     !balanceProvider.isLoading) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    balanceProvider.loadBalance();
+                    // balanceProvider.loadBalance();
+                    balanceProvider.loadBalance(context);
                   });
                 }
 
@@ -66,7 +68,7 @@ class _AccountDrawerState extends State<AccountDrawer> {
               },
             ),
             const SizedBox(height: 20),
-            _buildAccountButton(context, 'AED Account', 1, "AED 0.00",
+            _buildAccountButton(context, 'AED Account', 1, 'AED 0.00',
                 expandable: true),
             const SizedBox(height: 20),
             _buildAccountButton(context, 'USDT Account', 2, "USDT 0.00",
@@ -79,7 +81,7 @@ class _AccountDrawerState extends State<AccountDrawer> {
       ),
     );
   }
-
+ 
   Widget _buildHeader(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -87,14 +89,14 @@ class _AccountDrawerState extends State<AccountDrawer> {
         const Text(
           'Accounts',
           style: TextStyle(
-            color: Colors.white,
+            color: AppColors.textColor,
             fontSize: 28,
             fontWeight: FontWeight.bold,
           ),
         ),
         IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.close, color: Colors.white),
+          icon: const Icon(Icons.close, color: AppColors.textColor),
         ),
       ],
     );
@@ -116,20 +118,39 @@ class _AccountDrawerState extends State<AccountDrawer> {
     return Column(
       children: [
         InkWell(
-          onTap: () {
-            if (isAddButton) {
+          // onTap: () {
+          //   if (isAddButton) {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       const SnackBar(content: Text("Add Account clicked")),
+          //     );
+          //   } else {
+          //     _toggleExpansion(index);
+          //     selectedAccountNotifier.selectAccount(label);
+          //   }
+          // },
+
+          onTap: (){
+            if(isAddButton){
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Add Account clicked")),
+                SnackBar(content: Text("Add Account Clicked"))
               );
-            } else {
+            }else{
               _toggleExpansion(index);
-              selectedAccountNotifier.selectAccount(label);
+              if(index==0){
+                final balance = Provider.of<BalanceProvider>(context,listen: false).balance;
+                 final formattedBalance = balance != null
+                  ? "Ð${balance.availableBalance?.toStringAsFixed(2)}"
+                  : "Ð0.00";
+              selectedAccountNotifier.selectAccount(label, formattedBalance);
+              } else{
+                selectedAccountNotifier.selectAccount(label);
+              }
             }
           },
           borderRadius: BorderRadius.circular(10),
           child: Container(
             decoration: BoxDecoration(
-              color: isExpanded ? Colors.grey[850] : Colors.transparent,
+              color: isExpanded ? AppColors.fillColor : Colors.transparent,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
                 topRight: Radius.circular(12),
@@ -145,7 +166,7 @@ class _AccountDrawerState extends State<AccountDrawer> {
                 _buildAccountInfo(context, label, balance, isSelected),
                 const Spacer(),
                 if (expandable)
-                  const Icon(Icons.more_vert, color: Colors.white),
+                  const Icon(Icons.more_vert, color: AppColors.textColor),
               ],
             ),
           ),
@@ -166,7 +187,7 @@ class _AccountDrawerState extends State<AccountDrawer> {
           label,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: AppColors.textColor,
             fontSize: 18,
           ),
         ),
@@ -174,7 +195,7 @@ class _AccountDrawerState extends State<AccountDrawer> {
           Text(
             isSelected ? selectedAccountNotifier.selectedBalance : balance,
             style: const TextStyle(
-              color: Colors.white,
+              color: AppColors.textColor,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -182,12 +203,11 @@ class _AccountDrawerState extends State<AccountDrawer> {
       ],
     );
   }
-
   Widget _buildExpandableActions() {
     return Container(
       height: 60,
       decoration: BoxDecoration(
-        color: Colors.grey[850],
+        color: AppColors.fillColor,
         borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(12),
           bottomRight: Radius.circular(12),
@@ -210,7 +230,7 @@ class _AccountDrawerState extends State<AccountDrawer> {
         onPressed: () {},
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.grey[700],
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.textColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(7),
           ),
@@ -242,7 +262,7 @@ class _AccountDrawerState extends State<AccountDrawer> {
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
-            foregroundColor: Colors.black,
+            foregroundColor: AppColors.background,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(7),
             ),

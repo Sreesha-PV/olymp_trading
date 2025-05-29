@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 
 void orderSuccessDialog(BuildContext context){
   showDialog(
@@ -8,7 +9,7 @@ void orderSuccessDialog(BuildContext context){
         alignment: Alignment.center,
         content: const Text(
           'Order placed successfully',
-          style: TextStyle(color: Colors.green,fontSize: 16,fontWeight: FontWeight.bold),),
+          style: TextStyle(color: AppColors.success,fontSize: 16,fontWeight: FontWeight.bold),),
           actions: [
             GestureDetector(
               onTap: () {
@@ -30,7 +31,7 @@ void orderSuccessDialog(BuildContext context){
               child: const Text(
                 'Ok',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),

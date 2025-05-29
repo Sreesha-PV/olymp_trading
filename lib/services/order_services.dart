@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:olymp_trade/constants.dart';
+import 'package:olymp_trade/core/constants/urls.dart';
 import 'package:olymp_trade/features/model/order_creation_request.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,8 +31,7 @@ class OrderRequestService {
   }
 
   Future<String?> createOrder(
-      OrderCreationRequest request, BuildContext context) async {
-    // final url = Uri.parse('http://192.168.4.30:8080/api/v1/orders');
+    OrderCreationRequest request, BuildContext context) async {
     final url = Uri.parse(ApiUrl.order);
     var authToken = await getToken();
 
@@ -93,4 +92,5 @@ class OrderRequestService {
     return guidRegex.hasMatch(guid);
   }
 }
+
 

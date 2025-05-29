@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:olymp_trade/features/provider/dropdown_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,7 @@ class ByTimePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(color: AppColors.labelColor),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -108,7 +109,7 @@ class ByTimePage extends StatelessWidget {
                         Text(
                           "Save",
                           style: TextStyle(
-                              color: Colors.black,
+                              color: AppColors.background,
                               fontSize: 15,
                               fontWeight: FontWeight.bold),
                         ),
@@ -140,20 +141,19 @@ class _OpeningTimeField extends StatefulWidget {
 
 class _OpeningPriceFieldState extends State<_OpeningTimeField> {
   final FocusNode _focusNode = FocusNode();
-  Color _borderColor = Colors.grey[800]!;
-  Color _titleColor = Colors.grey[400]!;
-
+  Color _borderColor = AppColors.borderColor;
+  Color _titleColor = AppColors.labelColor;
   @override
   void initState() {
     super.initState();
     _focusNode.addListener(() {
       setState(() {
         if (_focusNode.hasFocus) {
-          _borderColor = const Color.fromARGB(255, 102, 240, 83);
-          _titleColor = Colors.green;
+          _borderColor = AppColors.focusColor;
+          _titleColor = AppColors.success;
         } else {
-          _borderColor = Colors.grey[800]!;
-          _titleColor = Colors.grey[400]!;
+          _borderColor = AppColors.borderColor;
+          _titleColor = AppColors.labelColor;
         }
       });
     });
@@ -176,7 +176,7 @@ class _OpeningPriceFieldState extends State<_OpeningTimeField> {
           decoration: BoxDecoration(
             border: Border.all(color: _borderColor),
             borderRadius: BorderRadius.circular(10),
-            color: const Color.fromARGB(255, 24, 23, 23),
+           color: AppColors.bgColor,
           ),
           child: Stack(
             children: [
@@ -211,3 +211,4 @@ class _OpeningPriceFieldState extends State<_OpeningTimeField> {
     );
   }
 }
+

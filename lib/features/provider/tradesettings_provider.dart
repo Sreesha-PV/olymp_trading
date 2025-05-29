@@ -11,7 +11,9 @@ class TradeSettingsProvider with ChangeNotifier {
   int _userIdInt = 0;
 
   double? _availablebalance = 0;
-
+  String _customTimeLabel = 'Fixed Time Mode';
+  // String _customProfitLabel = 'Profit';
+  String _customProfitLabel = '';
   // bool _isOrderPlaced = false;
 
   double get amount => _amount;
@@ -23,9 +25,18 @@ class TradeSettingsProvider with ChangeNotifier {
   String? get userId => _userId;
   int get userIdInt => _userIdInt;
 
+  String get customTimeLabel => _customTimeLabel;
+  String get customProfitLabel => _customProfitLabel;
+
   double? get availableBalance => _availablebalance;
 
   // bool get isOrderPlaced => _isOrderPlaced;
+
+   void setCustomLabels(String timeLabel, String profitLabel) {
+    _customTimeLabel = timeLabel;
+    _customProfitLabel = profitLabel;
+    notifyListeners();
+  }
 
   void setAmount(double value) {
     _amount = value;
@@ -107,3 +118,5 @@ class TradeSettingsProvider with ChangeNotifier {
   //   notifyListeners();
   // } 
 }
+
+

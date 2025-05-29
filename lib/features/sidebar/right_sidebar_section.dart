@@ -1,23 +1,62 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:olymp_trade/features/dialog/order_success.dart';
 import 'package:olymp_trade/features/model/order_creation_request.dart';
 import 'package:olymp_trade/features/provider/order_provider.dart';
 import 'package:olymp_trade/features/provider/orderrequest_provider.dart';
+import 'package:olymp_trade/features/provider/selected_account_provider.dart';
 import 'package:olymp_trade/features/provider/tabbar_provider.dart';
+import 'package:olymp_trade/features/provider/trade_badge_provider.dart';
 import 'package:olymp_trade/features/provider/tradesettings_provider.dart';
 import 'package:olymp_trade/features/provider/tradesocket_provider.dart';
+import 'package:olymp_trade/screens/enable_order.dart';
 import 'package:provider/provider.dart';
 
-class RightSidebarSection extends StatelessWidget {
-   const RightSidebarSection({super.key});
+// class RightSidebarSection extends StatelessWidget {
+//    const RightSidebarSection({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final TextEditingController amountController = TextEditingController();
+//     final TextEditingController durationController = TextEditingController();
+
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.end,
+//       children: [
+//         _buildSidebarContent(amountController, durationController, context),
+//       ],
+//     );
+//   }
+
+class RightSidebarSection extends StatefulWidget {
+  const RightSidebarSection({super.key});
+
+  @override
+  State<RightSidebarSection> createState() => _RightSidebarSectionState();
+}
+
+class _RightSidebarSectionState extends State<RightSidebarSection> {
+  late TextEditingController amountController;
+  late TextEditingController durationController;
+
+  @override
+  void initState() {
+    super.initState();
+    amountController = TextEditingController(text: '0');
+    durationController = TextEditingController(text: '1 min');
+  }
+
+  @override
+  void dispose() {
+    amountController.dispose();
+    durationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController amountController = TextEditingController();
-    final TextEditingController durationController = TextEditingController();
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -26,69 +65,94 @@ class RightSidebarSection extends StatelessWidget {
     );
   }
 
+
+// }
+
   Widget _buildSidebarContent(TextEditingController amountController,
       TextEditingController durationController, BuildContext context) {
     return Container(
       width: 200,
-      color: Colors.black,
+      color: AppColors.background,
       child: Column(
+        // children: [
+        //   _buildAmountAndDurationFields(
+        //       amountController, durationController, context),
+        //   const SizedBox(height: 5),
+        //   _buildActionButtons(amountController, context),
+        //   const SizedBox(height: 5),
+        //   _buildProfitInfo(context),
+        // ],
         children: [
-          _buildAmountAndDurationFields(
-              amountController, durationController, context),
-          const SizedBox(height: 10),
+          _buildAmountAndDurationFields(amountController, durationController, context),
+          // const SizedBox(height: 2,),
           _buildActionButtons(amountController, context),
-          const SizedBox(height: 10),
-          _buildProfitInfo(context),
+          // const SizedBox(height: 2,),
+          _buildProfitInfo(context)
         ],
       ),
     );
   }
-
+ 
   Widget _buildAmountAndDurationFields(TextEditingController amountController,
-      TextEditingController durationController, BuildContext context) {
+    TextEditingController durationController, BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
-          child: AmountField(controller: amountController),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 10),
+          // child:
+           AmountField(controller: amountController),
+        // ),
         _buildAmountAdjustmentButtons(),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8),
           child: DurationField(controller: durationController),
         ),
-        _buildDurationAdjustmentButtons(),
+        _buildDurationAdjustmentButtons(context),
       ],
     );
   }
- 
-  Widget _buildAmountAdjustmentButtons() {
+
+  Widget _buildAmountAdjustmentButtons(){
     return Row(
       children: [
         const SizedBox(width: 12),
         Padding(
           padding: const EdgeInsets.only(left: 14, top: 8),
           child: ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              setState(() {
+                int currentAmount = int.tryParse(amountController.text) ?? 0;
+                currentAmount = (currentAmount - 1).clamp(0, 999999); 
+                amountController.text = currentAmount.toString();
+              });
+              },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 24, 23, 23),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(7),
               ),
-              minimumSize: const Size(75, 30),
+              minimumSize: const Size(74, 30),
             ),
             child: Icon(
               CupertinoIcons.minus,
-              color: Colors.grey[800],
+              color: AppColors.borderColor,
               size: 19,
             ),
           ),
         ),
+       
         const SizedBox(width: 10),
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ElevatedButton(
-            onPressed: () {},
+           onPressed: () {
+          setState(() {
+            int currentAmount = int.tryParse(amountController.text) ?? 0;
+            currentAmount += 1;
+            amountController.text = currentAmount.toString();
+          });
+        },
+
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 24, 23, 23),
               shape: RoundedRectangleBorder(
@@ -98,7 +162,7 @@ class RightSidebarSection extends StatelessWidget {
             ),
             child: Icon(
               Icons.add,
-              color: Colors.grey[800],
+              color:  AppColors.borderColor,
               size: 19,
             ),
           ),
@@ -106,15 +170,26 @@ class RightSidebarSection extends StatelessWidget {
       ],
     );
   }
-
-  Widget _buildDurationAdjustmentButtons() {
+  
+  Widget _buildDurationAdjustmentButtons(BuildContext context) {
+    final tradeSettings=Provider.of<TradeSettingsProvider>(context);
     return Row(
       children: [
         const SizedBox(width: 10),
         Padding(
           padding: const EdgeInsets.only(left: 14, top: 8),
           child: ElevatedButton(
-            onPressed: () {},
+            // onPressed: () {
+            //   tradeSettings.decreaseAmount();
+            // },
+            onPressed: () {
+            setState(() {
+              int minutes = _extractMinutes(durationController.text);
+              minutes = (minutes - 1).clamp(1, 120);
+              durationController.text = _formatDuration(minutes);
+            });
+          },
+
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 24, 23, 23),
               shape: RoundedRectangleBorder(
@@ -133,7 +208,17 @@ class RightSidebarSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: ElevatedButton(
-            onPressed: () {},
+            // onPressed: () {
+            //   tradeSettings.increaseAmount();
+            // },
+            onPressed: () {
+            setState(() {
+              int minutes = _extractMinutes(durationController.text);
+              minutes += 1;
+              durationController.text = _formatDuration(minutes);
+            });
+          },
+
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 24, 23, 23),
               shape: RoundedRectangleBorder(
@@ -143,7 +228,7 @@ class RightSidebarSection extends StatelessWidget {
             ),
             child: const Icon(
               Icons.add,
-              color: Color.fromARGB(255, 163, 185, 179),
+              color: AppColors.iconColor,
               size: 19,
             ),
           ),
@@ -207,23 +292,34 @@ class RightSidebarSection extends StatelessWidget {
           }
           Provider.of<TabVisibilityProvider>(context, listen: false)
               .toggleTabBarVisibility();
+          enableOrder(context);
         },
         child: const Row(
           children: [
             Text(
               "Enable Orders",
               style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.textColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 14),
             ),
-            SizedBox(width: 20),
+            // const SizedBox(height: 2,),
+            // const Text("Orders"),
+ 
+            // const AutoSizeText('Enable Orders',
+            // style: TextStyle(
+            //       color: AppColors.textColor,
+            //       fontWeight: FontWeight.bold,
+            //       fontSize: 14)),
+            const SizedBox(width: 5),
             Icon(
               Icons.watch_later_outlined,
-              color: Colors.white,
+              color: AppColors.textColor,
             ),
+          
           ],
         ),
+        
       ),
     );
   }
@@ -234,7 +330,7 @@ class RightSidebarSection extends StatelessWidget {
       width: 160,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 34, 175, 93),
+        color: AppColors.buttonUp,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -253,7 +349,7 @@ class RightSidebarSection extends StatelessWidget {
             child: const Text(
               'Up',
               style: TextStyle(
-                color: Colors.black,
+                color: AppColors.background,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -262,7 +358,7 @@ class RightSidebarSection extends StatelessWidget {
           const SizedBox(width: 50),
           const Icon(
             CupertinoIcons.arrow_up,
-            color: Colors.black,
+            color: AppColors.background,
           ),
         ],
       ),
@@ -275,7 +371,7 @@ class RightSidebarSection extends StatelessWidget {
       width: 160,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 228, 73, 86),
+        color: AppColors.buttonDown,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
@@ -295,7 +391,7 @@ class RightSidebarSection extends StatelessWidget {
             child: const Text(
               'Down',
               style: TextStyle(
-                color: Colors.black,
+                color: AppColors.background,
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
               ),
@@ -304,52 +400,160 @@ class RightSidebarSection extends StatelessWidget {
           const SizedBox(width: 41),
           const Icon(
             CupertinoIcons.down_arrow,
-            color: Colors.black,
+            color: AppColors.background,
           ),
         ],
       ),
     );
   }
 
+  // Widget _buildProfitInfo(BuildContext context) {
+
+  // final selectedAccountNotifier=Provider.of<SelectedAccountNotifier>(context);
+  // final String currency=selectedAccountNotifier.currencySymbol;
+  //   return Consumer<OrderProvider>(
+  //     builder: (context, orderProvider, child) {
+  //       return Padding(
+  //         padding: const EdgeInsets.only(right: 22, top: 12),
+  //         child: Text(
+  //           orderProvider.isOrderPlaced
+  //               // ? 'Profit: +AED ${orderProvider.profit}'
+  //               // : 'Profit AED 0',
+  //               ? 'Profit $currency ${orderProvider.profit?.toStringAsFixed(2) ?? "0.00"}'
+  //               :'Profit $currency 0',
+  //           style: const TextStyle(
+  //             color: AppColors.iconColor,
+  //             fontSize: 12,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),   
+  //      );      
+  //     },
+  //   );
+  // }
+
+  
   Widget _buildProfitInfo(BuildContext context) {
-    return Consumer<OrderProvider>(
-      builder: (context, orderProvider, child) {
-        return Padding(
-          padding: const EdgeInsets.only(right: 22, top: 12),
-          child: Text(
-            orderProvider.isOrderPlaced
-                ? 'Profit: +AED ${orderProvider.amount}'
-                : 'Profit AED 0',
-            style: const TextStyle(
-              color: Color.fromARGB(255, 163, 185, 179),
-              fontSize: 12,
-              fontWeight: FontWeight.bold,
+  final selectedAccountNotifier = Provider.of<SelectedAccountNotifier>(context);
+  final String currency = selectedAccountNotifier.currencySymbol;
+
+  return Consumer<OrderProvider>(
+
+    builder: (context, orderProvider, child) {
+      final profit = orderProvider.profit;
+      final hasProfit = orderProvider.isOrderPlaced;
+
+      return Padding(
+        padding: const EdgeInsets.only(right: 22, top: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              hasProfit
+                  ? 'Profit: $currency ${profit?.toStringAsFixed(2) ?? "0.00"}'
+                  : 'Profit: $currency 0',
+              style: const TextStyle(
+                color: AppColors.iconColor,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            const SizedBox(width: 6),
+            // if (hasProfit)
+              Tooltip(
+                message: "The profit you will earn on a successfull trade",
+                preferBelow: false,
+                 decoration: BoxDecoration(
+                  color: Colors.grey[800],
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                textStyle: const TextStyle(
+                  color: AppColors.textColor,
+                  fontSize: 13
+                ),
+                child: CircleAvatar(
+                  radius: 8,
+                  backgroundColor: AppColors.borderColor,
+                  child: const Icon(
+                    Icons.question_mark_outlined,
+                    color: AppColors.background,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ],
           ),
         );
       },
     );
   }
+
+
   createOrder(int orderType, BuildContext context) async {
-    final tradeSettings =
-        Provider.of<TradeSettingsProvider>(context, listen: false);
-    final orderRequest =
-        Provider.of<OrderRequestProvider>(context, listen: false);
-    final socketProvider = 
-        Provider.of<TradeSocketProvider>(context,listen: false);
-    OrderCreationRequest request = OrderCreationRequest(
-      userId: tradeSettings.userId,
-      userIdInt: tradeSettings.userIdInt,
-      symbol: tradeSettings.symbol,
-      // orderType: tradeSettings.ordertype,
-      orderType: orderType,
-      amount: tradeSettings.amount,
-      strikePrice: tradeSettings.strikeprice,
-      orderDuration: tradeSettings.minutes,
-    );
-    await orderRequest.createOrder(request, context);
-    socketProvider.fetchActiveOrders();
-  } 
+  final tradeSettings =
+      Provider.of<TradeSettingsProvider>(context, listen: false);
+  final orderRequest =
+      Provider.of<OrderRequestProvider>(context, listen: false);
+  final socketProvider =
+      Provider.of<TradeSocketProvider>(context, listen: false);
+
+  int userDuration = _extractMinutes(durationController.text);
+
+  OrderCreationRequest request = OrderCreationRequest(
+    userId: tradeSettings.userId,
+    userIdInt: tradeSettings.userIdInt,
+    symbol: tradeSettings.symbol,
+    orderType: orderType,
+    amount: double.tryParse(amountController.text) ?? tradeSettings.amount,
+    strikePrice: tradeSettings.strikeprice,
+    orderDuration: userDuration, 
+  );
+
+  await orderRequest.createOrder(request, context);
+  socketProvider.fetchActiveOrders();
+
+  Provider.of<TradeBadgeProvider>(context, listen: false).showBadge();
+  }
+
+  // createOrder(int orderType, BuildContext context) async {
+  //   final tradeSettings =
+  //       Provider.of<TradeSettingsProvider>(context, listen: false);
+  //   final orderRequest =
+  //       Provider.of<OrderRequestProvider>(context, listen: false);
+  //   final socketProvider = 
+  //       Provider.of<TradeSocketProvider>(context,listen: false);
+  //   OrderCreationRequest request = OrderCreationRequest(
+  //     userId: tradeSettings.userId,
+  //     userIdInt: tradeSettings.userIdInt,
+  //     symbol: tradeSettings.symbol,
+  //     // orderType: tradeSettings.ordertype,
+  //     orderType: orderType,
+  //     amount: tradeSettings.amount,
+  //     strikePrice: tradeSettings.strikeprice,
+  //     orderDuration: tradeSettings.minutes,
+  //   );
+  //   await orderRequest.createOrder(request, context);
+  //   socketProvider.fetchActiveOrders();
+
+  //   Provider.of<TradeBadgeProvider>(context,listen: false).showBadge();
+  // }
+  
+ int _extractMinutes(String text) {
+  final match = RegExp(r'(\d+)h\s*(\d+)m').firstMatch(text);
+  if (match != null) {
+    int hours = int.parse(match.group(1)!);
+    int minutes = int.parse(match.group(2)!);
+    return hours * 60 + minutes;
+  }
+  return int.tryParse(text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 1;
+  }
+
+String _formatDuration(int totalMinutes) {
+  int hours = totalMinutes ~/ 60;
+  int minutes = totalMinutes % 60;
+  return '${hours.toString().padLeft(2, '0')}h ${minutes.toString().padLeft(2, '0')}m';
+}
+
 }
 
 class AmountField extends StatefulWidget {
@@ -372,6 +576,11 @@ class _AmountFieldState extends State<AmountField> {
 
   @override
   Widget build(BuildContext context) {
+
+    final selectedAccountNotifier = Provider.of<SelectedAccountNotifier>(context);
+    final tradeSettings = Provider.of<TradeSettingsProvider>(context);
+    String currency = selectedAccountNotifier.currencySymbol;
+
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -379,14 +588,15 @@ class _AmountFieldState extends State<AmountField> {
         });
       },
       child: Container(
-        height: 56,
+        height: 60,
         width: 150,
         decoration: BoxDecoration(
           border: Border.all(
-            color: isEditing ? Colors.green : Colors.grey[800]!,
+            color: isEditing ? AppColors.focusColor : AppColors.borderColor,
+            width: isEditing ? 2 : 1
           ),
           borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(255, 24, 23, 23),
+          color: AppColors.bgColor
         ),
         child: Stack(
           children: [
@@ -396,7 +606,7 @@ class _AmountFieldState extends State<AmountField> {
               child: AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 200),
                 style: TextStyle(
-                  color: isEditing ? Colors.green : Colors.grey[400]!,
+                  color: isEditing ? AppColors.focusColor : AppColors.labelColor,
                   fontSize: 12,
                 ),
                 child: const Text('Amount, AED'),
@@ -405,8 +615,8 @@ class _AmountFieldState extends State<AmountField> {
             Positioned.fill(
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                child: TextFormField(
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: TextFormField(
                   controller: widget.controller,
                   enabled: isEditing,
                   keyboardType: const TextInputType.numberWithOptions(
@@ -435,33 +645,55 @@ class DurationField extends StatefulWidget {
 }
 
 class _DurationFieldState extends State<DurationField> {
-  final TextEditingController _controller = TextEditingController();
   bool isEditing = false;
-
+  late FocusNode _focusNode;
+ 
   @override
   void initState() {
     super.initState();
-    _controller.text = '00h 02m';
+ 
+    widget.controller.text = '1 min';
+    _focusNode =FocusNode();
+
+    _focusNode.addListener((){
+      if(!_focusNode.hasFocus){
+        setState(() {
+          isEditing = false;
+
+          if(widget.controller.text.trim().isEmpty){
+            widget.controller.text = '1 min';
+          }
+        });
+      }
+    });
   }
 
+
+@override
+void dispose(){
+  _focusNode.dispose();
+  super.dispose();
+}
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         setState(() {
           isEditing = true;
-          _controller.text = '00h 02m';
+          widget.controller.text = '00h 02m';
         });
+        _focusNode.requestFocus();
       },
       child: Container(
-        height: 56,
+        height: 60,
         width: 150,
         decoration: BoxDecoration(
           border: Border.all(
-            color: isEditing ? Colors.green : Colors.grey[800]!,
+            width: isEditing ? 2 :1,
+            color: isEditing ? AppColors.focusColor : AppColors.borderColor,
           ),
           borderRadius: BorderRadius.circular(10),
-          color: const Color.fromARGB(255, 24, 23, 23),
+          color: AppColors.bgColor,
         ),
         child: Stack(
           children: [
@@ -471,7 +703,7 @@ class _DurationFieldState extends State<DurationField> {
               child: AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 200),
                 style: TextStyle(
-                  color: isEditing ? Colors.green : Colors.grey[400]!,
+                  color: isEditing ? AppColors.focusColor : AppColors.labelColor,
                   fontSize: 12,
                 ),
                 child: const Text('Duration'),
@@ -479,14 +711,13 @@ class _DurationFieldState extends State<DurationField> {
             ),
             Positioned.fill(
               child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: TextFormField(
-                  controller: _controller,
+                  controller: widget.controller,
                   enabled: isEditing,
-                  keyboardType: const TextInputType.numberWithOptions(
-                      signed: false, decimal: false),
+                  keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.done,
+                  style: const TextStyle(color:AppColors.textColor),
                   decoration: const InputDecoration(
                     border: InputBorder.none,
                   ),
@@ -494,21 +725,21 @@ class _DurationFieldState extends State<DurationField> {
                     FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                   ],
                   onChanged: (value) {
+                    if (value.length < 2) return;
+
                     String hours = '00';
                     String minutes = '00';
-
-                    if (value.isNotEmpty) {
-                      hours = value.substring(
-                          0, value.length > 2 ? 2 : value.length);
-                      minutes = value.length > 2 ? value.substring(3) : '00';
+ 
+                    if (value.length >= 4) {
+                      hours = value.substring(0, 2);
+                      minutes = value.substring(2, 4);
+                    } else if (value.length == 2) {
+                      minutes = value;
                     }
-
-                    setState(() {
-                      _controller.text = '$hours' + 'h' + '$minutes' + 'm';
-                    });
-
-                    _controller.selection = TextSelection.collapsed(
-                        offset: _controller.text.length);
+                    widget.controller.text = '$hours' + 'h ' + '$minutes' + 'm';
+                    widget.controller.selection = TextSelection.collapsed(
+                      offset: widget.controller.text.length,
+                    );
                   },
                 ),
               ),
@@ -517,6 +748,5 @@ class _DurationFieldState extends State<DurationField> {
         ),
       ),
     );
-  }
 }
-
+}

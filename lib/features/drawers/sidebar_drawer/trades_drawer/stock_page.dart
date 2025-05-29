@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 
 class StocksPage extends StatelessWidget {
   const StocksPage({super.key});
@@ -15,7 +16,7 @@ class StocksPage extends StatelessWidget {
                 child: Text(
                   'Portfolio',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                   ),
@@ -35,7 +36,7 @@ class StocksPage extends StatelessWidget {
                 Icon(
                   Icons.shopping_bag_outlined,
                   size: 120,
-                  color: Colors.grey[800],
+                  color: AppColors.borderColor,
                 )
               ],
             ),
@@ -46,7 +47,7 @@ class StocksPage extends StatelessWidget {
             children: [
               Text(
                 'You have no Active Positions on',
-                style: TextStyle(color: Color.fromARGB(255, 230, 245, 247)),
+                style: TextStyle(color: AppColors.drawerContent),
               ),
             ],
           ),
@@ -54,7 +55,7 @@ class StocksPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('this account',
-                  style: TextStyle(color: Color.fromARGB(255, 230, 245, 247)))
+                  style: TextStyle(color: AppColors.drawerContent))
             ],
           ),
           const SizedBox(
@@ -69,13 +70,13 @@ class StocksPage extends StatelessWidget {
                     width: 250,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.grey[800],
+                      color: AppColors.borderColor,
                     ),
                     child: TextButton(
                         onPressed: () {},
                         child: const Text(
                           'Explore Assets',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: AppColors.textColor),
                         )),
                   ),
                 ],

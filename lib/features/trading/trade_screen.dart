@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:olymp_trade/features/chart/chart_repo.dart';
 import 'package:olymp_trade/features/chart/chart_widget.dart';
 import 'package:olymp_trade/features/drawers/account_drawer.dart';
 import 'package:olymp_trade/features/drawers/payment_drawer.dart';
 import 'package:olymp_trade/features/provider/drawer_provider.dart';
 import 'package:olymp_trade/features/provider/selected_index_provider.dart';
-import 'package:olymp_trade/features/sections/bottom_section.dart';
-import 'package:olymp_trade/features/sections/top_section.dart';
+import 'package:olymp_trade/features/sections/bottom_section/bottom_section.dart';
+import 'package:olymp_trade/features/sections/top_sections/top_section.dart';
 import 'package:olymp_trade/features/sidebar/right_sidebar_section.dart';
 import 'package:olymp_trade/features/sidebar/sidebar_section.dart';
 import 'package:provider/provider.dart';
@@ -26,9 +27,20 @@ class TradeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final themeProvider=Provider.of<ThemeProvider>(context,listen: false);
     return Scaffold(
+      // appBar: AppBar(
+      //   title: Icon(Icons.dark_mode_outlined),
+      //   actions: [
+      //     Switch(
+      //       value: themeProvider.isDarkMode, 
+      //       onChanged: (value){
+      //         themeProvider.toggleTheme(value);
+      //       })
+      //   ],
+      // ),
       key: scaffoldKey,
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.background,
       drawer: _buildDrawer(),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -95,7 +107,7 @@ class TradeScreen extends StatelessWidget {
                         initialThemeIsDark: false,
                       ),
                     ),
-                     RightSidebarSection(),
+                    const RightSidebarSection(),
                   ],
                 ),
               ),
@@ -135,15 +147,11 @@ class TradeScreen extends StatelessWidget {
               },
             );
           case 2:
-
-            // String email = Provider.of<AuthProvider>(context, listen: false).registeredEmail ?? 'No email available';
-
             return ProfileDrawer(
               selectedIndex: selectedIndexNotifier.selectedIndex,
               onSelect: (index) {
                 selectedIndexNotifier.updateSelectedIndex(index);
               },
-              // email: email,
             );
           default:
             return AccountDrawer(
@@ -157,3 +165,5 @@ class TradeScreen extends StatelessWidget {
     );
   }
 }
+
+

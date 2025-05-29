@@ -1,25 +1,25 @@
-// import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
-// void showTradeExpiredDialog(BuildContext context) {
-//     showDialog(
-//       context: context,
-//       barrierDismissible: false,
-//       builder: (BuildContext context) {
-//         return AlertDialog(
-//           title: const Text('Trade Expired'),
-//           content: const Text('The trade has expired and moved to history.'),
-//           actions: <Widget>[
-//             TextButton(
-//               onPressed: () {
-//                 Navigator.of(context).pop();
-//               },
-//               child: const Text('OK'),
-//             ),
-//           ],
-//         );
-//       },
-//     );
-//   }
+void showTradeExpiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Trade Expired'),
+          content: const Text('The trade has expired and moved to history.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 
 

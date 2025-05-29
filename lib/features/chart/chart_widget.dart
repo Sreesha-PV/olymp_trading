@@ -132,9 +132,9 @@ class _CandleChartWidgetState extends State<CandleChartWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Binance Live Data"),
-      ),
+      // appBar: AppBar(
+      //   title: const Text("Binance Live Data"),
+      // ),
       body: Center(
         child: Column(
           children: [

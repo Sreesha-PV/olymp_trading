@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'trades_drawer/fixed_time_page.dart';
 import 'trades_drawer/forex_page.dart';
 import 'trades_drawer/stock_page.dart';
@@ -9,7 +10,7 @@ class TradesDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color.fromARGB(255, 24, 23, 23),
+      backgroundColor: AppColors.bgColor,
       child: Column(
         children: [
           Padding(
@@ -19,7 +20,7 @@ class TradesDrawer extends StatelessWidget {
                 const Text(
                   'Trades',
                   style: TextStyle(
-                      color: Colors.white,
+                      color: AppColors.textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 26),
                 ),
@@ -29,22 +30,22 @@ class TradesDrawer extends StatelessWidget {
                     Navigator.pop(context);
                   },
                   icon: const Icon(Icons.close),
-                  color: Colors.white,
+                  color: AppColors.textColor,
                 )
               ],
             ),
           ),
-          const Flexible(
+          Flexible(
             child: DefaultTabController(
               length: 3,
               child: Column(
                 children: [
                   TabBar(
-                    unselectedLabelColor: Colors.grey,
-                    labelColor: Colors.white,
-                    dividerColor: Colors.grey,
-                    indicatorColor: Colors.white,
-                    tabs: [
+                    unselectedLabelColor: AppColors.labelColor,
+                    labelColor: AppColors.textColor,
+                    dividerColor: AppColors.labelColor,
+                    indicatorColor: AppColors.textColor,
+                    tabs: const [
                       Tab(text: 'Fixed Time'),
                       Tab(text: 'Forex'),
                       Tab(text: 'Stocks'),
@@ -54,8 +55,8 @@ class TradesDrawer extends StatelessWidget {
                     child: TabBarView(
                       children: [
                         FixedTimePage(),
-                        ForexPage(),
-                        StocksPage(),
+                        const ForexPage(),
+                        const StocksPage(),
                       ],
                     ),
                   ),

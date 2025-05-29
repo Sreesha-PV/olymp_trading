@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:olymp_trade/constants.dart';
+import 'package:olymp_trade/core/constants/urls.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:olymp_trade/features/model/user_model.dart';
 
@@ -18,11 +18,7 @@ class AccountDetailsServices {
   }
 
   Future<UserData?> getUserData() async {
-    try {
-      // var uri = Uri.http('192.168.4.30:8080', '/api/v1/client/account/details');
-      // var uri = Uri.parse('https://bo.zebacus.com/backend/api/v1/client/account/details');
-      
-      
+    try {      
       var uri = Uri.parse(ApiUrl.user);
       var authToken = await getToken();
 

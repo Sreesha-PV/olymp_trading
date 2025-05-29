@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:olymp_trade/features/provider/dropdown_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +10,10 @@ class ByPricePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController priceController = TextEditingController();
+    final FocusNode _focusNode = FocusNode();
+      Color _borderColor = AppColors.borderColor;
+      Color _titleColor = AppColors.labelColor;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -17,7 +22,7 @@ class ByPricePage extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
+                border: Border.all(color: AppColors.labelColor),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -25,7 +30,7 @@ class ByPricePage extends StatelessWidget {
                 children: [
                   const Text(
                     'Profitability',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,),
                   ),
                   Consumer<ProfitabilityProvider>(
                       builder: (context, model, child) {
@@ -57,7 +62,7 @@ class ByPricePage extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.only(top: 8 ,left: 8),
               child: Row(
                 children: [
                   _OpeningPriceField(
@@ -123,7 +128,7 @@ class ByPricePage extends StatelessWidget {
                           child: const Text(
                             "Save",
                             style: TextStyle(
-                              color: Colors.black,
+                              color: AppColors.background,
                               fontSize: 15,
                               fontWeight: FontWeight.bold,
                             ),
@@ -156,8 +161,8 @@ class _OpeningPriceField extends StatefulWidget {
 
 class _OpeningPriceFieldState extends State<_OpeningPriceField> {
   final FocusNode _focusNode = FocusNode();
-  Color _borderColor = Colors.grey[800]!;
-  Color _titleColor = Colors.grey[400]!;
+  Color _borderColor = AppColors.borderColor;
+  Color _titleColor = AppColors.labelColor;
 
   @override
   void initState() {
@@ -165,11 +170,11 @@ class _OpeningPriceFieldState extends State<_OpeningPriceField> {
     _focusNode.addListener(() {
       setState(() {
         if (_focusNode.hasFocus) {
-          _borderColor = const Color.fromARGB(255, 102, 240, 83);
-          _titleColor = Colors.green;
+          _borderColor = AppColors.focusColor;
+          _titleColor = AppColors.success;
         } else {
           _borderColor =
-              widget.controller.text.isEmpty ? Colors.red : Colors.grey[800]!;
+              widget.controller.text.isEmpty ? AppColors.error : AppColors.borderColor;
         }
       });
     });
@@ -192,7 +197,7 @@ class _OpeningPriceFieldState extends State<_OpeningPriceField> {
           decoration: BoxDecoration(
             border: Border.all(color: _borderColor),
             borderRadius: BorderRadius.circular(10),
-            color: const Color.fromARGB(255, 24, 23, 23),
+            color: AppColors.bgColor,
           ),
           child: Stack(
             children: [
@@ -222,9 +227,9 @@ class _OpeningPriceFieldState extends State<_OpeningPriceField> {
                     onChanged: (value) {
                       setState(() {
                         _borderColor =
-                            value.isEmpty ? Colors.red : Colors.grey[800]!;
+                            value.isEmpty ? AppColors.error: AppColors.borderColor!;
                         _titleColor =
-                            value.isEmpty ? Colors.red : Colors.grey[400]!;
+                            value.isEmpty ? AppColors.error : AppColors.labelColor;
                       });
                     },
                   ),
@@ -238,93 +243,3 @@ class _OpeningPriceFieldState extends State<_OpeningPriceField> {
   }
 }
 
-
-
-// class TradeBottomSection extends StatefulWidget {
-//   const TradeBottomSection({super.key});
-
-//   @override
-//   State<TradeBottomSection> createState() => _TradeBottomSectionState();
-// }
-
-// class _TradeBottomSectionState extends State<TradeBottomSection> {
-//   bool isButtonDisabled = false;
-
-//   void handleOrder(int orderType, BuildContext context) async {
-//     setState(() {
-//       isButtonDisabled = true;
-//     });
-
-//     await createOrder(orderType, context);
-
-//     if (context.mounted) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text(orderType == 0 ? 'Down order placed!' : 'Up order placed!'),
-//           backgroundColor: Colors.green,
-//           duration: const Duration(seconds: 2),
-//         ),
-//       );
-//     }
-
-//     // Re-enable the button after 2 seconds
-//     Future.delayed(const Duration(seconds: 2), () {
-//       if (mounted) {
-//         setState(() {
-//           isButtonDisabled = false;
-//         });
-//       }
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: const EdgeInsets.all(16),
-//       color: Colors.black,
-//       child: Column(
-//         children: [
-//           const SizedBox(height: 10),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               _fixedTimeInputField("1 min", context),
-//               const SizedBox(width: 5),
-//               _fixedAmountInputField("AED 0", context),
-//             ],
-//           ),
-//           const SizedBox(height: 10),
-//           Row(
-//             children: [
-//               OrderButton(
-//                 label: "Down",
-//                 color: isButtonDisabled ? Colors.grey : const Color.fromARGB(255, 228, 73, 86),
-//                 icon: CupertinoIcons.arrow_down,
-//                 onTap: isButtonDisabled
-//                     ? null
-//                     : () {
-//                         handleOrder(0, context);
-//                       },
-//               ),
-//               const SizedBox(width: 5),
-//               _iconButton(context, Icons.watch_later_outlined),
-//               const SizedBox(width: 10),
-//               OrderButton(
-//                 label: "Up",
-//                 color: isButtonDisabled ? Colors.grey : const Color.fromARGB(255, 34, 175, 93),
-//                 icon: CupertinoIcons.arrow_up,
-//                 onTap: isButtonDisabled
-//                     ? null
-//                     : () {
-//                         handleOrder(1, context);
-//                       },
-//               ),
-//             ],
-//           )
-//         ],
-//       ),
-//     );
-//   }
-
-
-// }

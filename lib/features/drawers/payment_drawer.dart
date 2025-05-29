@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 import 'package:olymp_trade/features/provider/selected_index_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -16,7 +17,7 @@ class PaymentDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       width: 360,
-      backgroundColor: const Color.fromARGB(255, 26, 25, 25),
+      backgroundColor: AppColors.bgColor,
       child: ListView(
         padding: const EdgeInsets.only(left: 15),
         children: [
@@ -27,7 +28,7 @@ class PaymentDrawer extends StatelessWidget {
                 child: Text(
                   'Payments',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 30,
                   ),
@@ -41,7 +42,7 @@ class PaymentDrawer extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 icon: const Icon(Icons.close),
-                color: Colors.white,
+                color: AppColors.textColor,
               )
             ],
           ),
@@ -59,11 +60,11 @@ class PaymentDrawer extends StatelessWidget {
               // color: Colors.green,
               child: ListTile(
                 leading: const Icon(Icons.wallet),
-                iconColor: Colors.black,
+                iconColor: AppColors.background,
                 title: const Text(
                   'Deposit',
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
+                      color: AppColors.background, fontWeight: FontWeight.bold),
                 ),
                 onTap: () {
                   Provider.of<SelectedIndexNotifier>(context, listen: false)
@@ -78,13 +79,13 @@ class PaymentDrawer extends StatelessWidget {
           SizedBox(
             height: 70,
             child: Card(
-              color: Colors.grey[850],
+              color: AppColors.fillColor,
               child: const ListTile(
                 leading: Icon(Icons.wallet_outlined),
-                iconColor: Colors.white,
+                iconColor: AppColors.textColor,
                 title: Text(
                   'Withdraw',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppColors.textColor),
                 ),
               ),
             ),
@@ -92,16 +93,16 @@ class PaymentDrawer extends StatelessWidget {
           SizedBox(
             height: 70,
             child: Card(
-              color: Colors.grey[850],
+              color: AppColors.fillColor,
               child: const ListTile(
                 leading: Icon(
                   CupertinoIcons.arrow_right_arrow_left,
                   size: 20,
                 ),
-                iconColor: Colors.white,
+                iconColor: AppColors.textColor,
                 title: Text(
                   'Transfer',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppColors.textColor),
                 ),
               ),
             ),
@@ -112,10 +113,10 @@ class PaymentDrawer extends StatelessWidget {
               color: Colors.grey[850],
               child: const ListTile(
                 leading: Icon(Icons.history),
-                iconColor: Colors.white,
+                iconColor: AppColors.textColor,
                 title: Text(
                   'Transaction',
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: AppColors.textColor),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:olymp_trade/core/constants/app_colors.dart';
 
 class ForexPage extends StatelessWidget {
   const ForexPage({super.key});
@@ -7,7 +8,8 @@ class ForexPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        backgroundColor: const Color.fromARGB(255, 24, 23, 23),
+        // backgroundColor: const Color.fromARGB(255, 24, 23, 23),
+        backgroundColor: AppColors.bgColor,
         child: ListView(padding: const EdgeInsets.only(left: 15), children: [
           const Row(
             children: [
@@ -16,7 +18,7 @@ class ForexPage extends StatelessWidget {
                 child: Text(
                   'Open Position',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: AppColors.textColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                   ),
@@ -36,7 +38,7 @@ class ForexPage extends StatelessWidget {
                 Icon(
                   CupertinoIcons.arrow_down_right_arrow_up_left,
                   size: 80,
-                  color: Colors.grey[800],
+                  color: AppColors.borderColor,
                 )
               ],
             ),
@@ -49,7 +51,7 @@ class ForexPage extends StatelessWidget {
             children: [
               Text(
                 'You have no open Fixed trades on',
-                style: TextStyle(color: Color.fromARGB(255, 230, 245, 247)),
+                style: TextStyle(color: AppColors.drawerContent),
               ),
             ],
           ),
@@ -57,7 +59,7 @@ class ForexPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text('this account',
-                  style: TextStyle(color: Color.fromARGB(255, 230, 245, 247)))
+                  style: TextStyle(color: AppColors.drawerContent))
             ],
           ),
           const SizedBox(height: 20),
@@ -70,13 +72,13 @@ class ForexPage extends StatelessWidget {
                     width: 250,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.grey[800],
+                      color: AppColors.borderColor,
                     ),
                     child: TextButton(
                         onPressed: () {},
                         child: const Text(
                           'Explore Assets',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: AppColors.textColor),
                         )),
                   ),
                 ],

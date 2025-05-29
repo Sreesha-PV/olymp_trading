@@ -4,6 +4,9 @@ import 'package:olymp_trade/features/drawers/sidebar_drawer/events_drawer.dart';
 import 'package:olymp_trade/features/drawers/sidebar_drawer/help_drawer.dart';
 import 'package:olymp_trade/features/drawers/sidebar_drawer/market_drawer.dart';
 import 'package:olymp_trade/features/drawers/sidebar_drawer/trades_drawer.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:olymp_trade/features/provider/trade_badge_provider.dart';
+import 'package:provider/provider.dart';
 
 class Sidebar extends StatelessWidget {
   final Function(Widget) onItemSelected;
@@ -18,6 +21,11 @@ class Sidebar extends StatelessWidget {
 
   Widget _buildVerticalSidebar() {
     final List<Map<String, dynamic>> sidebarItems = [
+      // {
+      //   "icon": CupertinoIcons.arrow_down_right_arrow_up_left,
+      //   "label": "Trades",
+      //   "drawer": const TradesDrawer(),
+      // },
       {
         "icon": CupertinoIcons.arrow_down_right_arrow_up_left,
         "label": "Trades",
@@ -48,14 +56,36 @@ class Sidebar extends StatelessWidget {
         children: [
           const SizedBox(height: 90),
           ...sidebarItems.map((item) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 40),
-              child: SidebarItem(
-                icon: item['icon'],
-                label: item['label'],
-                onTap: () => onItemSelected(item['drawer']),
-              ),
-            );
+            if (item['label'] == 'Trades') {
+              return Consumer<TradeBadgeProvider>(
+                builder: (context, badgeProvider, _) {
+                  return badges.Badge(
+                    showBadge: badgeProvider.hasNewTrade,
+                    position: badges.BadgePosition.topEnd(top: -8, end: -8),
+                    badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
+                    badgeContent: const Text('1'),
+                    child: SidebarItem(
+                      icon: item['icon'],
+                      label: item['label'],
+                      onTap: () {
+                        Provider.of<TradeBadgeProvider>(context, listen: false)
+                            .clearBadge();
+                        onItemSelected(item['drawer']);
+                      },
+                    ),
+                  );
+                },
+              );
+            } else {
+              return Padding(
+                padding: const EdgeInsets.only(top: 40),
+                child: SidebarItem(
+                  icon: item['icon'],
+                  label: item['label'],
+                  onTap: () => onItemSelected(item['drawer']),
+                ),
+              );
+            }
           }).toList(),
         ],
       ),
@@ -85,18 +115,46 @@ class Sidebar extends StatelessWidget {
         "index": 3,
       },
     ];
-
     return Container(
       height: 70,
       color: const Color.fromARGB(246, 17, 17, 17),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: sidebarItems.map((item) {
-          return SidebarItem(
-            icon: item['icon'],
-            label: item['label'],
-            onTap: () => _openBottomDrawer(context, item['index']),
-          );
+          if (item['label'] == 'Trades') {
+            return Consumer<TradeBadgeProvider>(
+                builder: (context, badgeProvider, _) {
+              return badges.Badge(
+                showBadge: badgeProvider.hasNewTrade,
+                position: badges.BadgePosition.topEnd(top: -8, end: -8),
+                badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
+              
+                badgeContent: const Text('1'),
+                child: SidebarItem(
+                    icon: item['icon'],
+                    label: item['label'],
+                    onTap: () {
+                      if (item['label'] == 'Trades') {
+                        Provider.of<TradeBadgeProvider>(context, listen: false)
+                            .clearBadge();
+                      }
+                      _openBottomDrawer(context, item['index']);
+                    }),
+              );
+            });
+          } else {
+            return SidebarItem(
+                icon: item['icon'],
+                label: item['label'],
+                // onTap: () => onItemSelected(item['drawer']),
+                onTap: () {
+                  if (item['label'] == 'Trades') {
+                    Provider.of<TradeBadgeProvider>(context, listen: false)
+                        .clearBadge();
+                  }
+                  onItemSelected(item['drawer']);
+                });
+          }
         }).toList(),
       ),
     );
@@ -121,6 +179,7 @@ class Sidebar extends StatelessWidget {
     );
   }
 
+//
   Widget _getDrawerContent(int index) {
     switch (index) {
       case 0:
