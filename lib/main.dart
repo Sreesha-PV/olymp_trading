@@ -45,19 +45,3 @@ class MyApp extends StatelessWidget {
 
 
 
-
-let res = pm.response.json();
-
-if (res.status === "executed") {
-  pm.test("Order is executed", () => {
-    pm.expect(res.status).to.eql("executed");
-    console.log("Execution price: " + res.executionPrice);
-    console.log("Profit/Loss: " + res.result);
-  });
-} else {
-  pm.test("Order not yet executed", () => {
-    pm.expect(res.status).to.not.eql("executed");
-    console.warn("Order is still pending. Check again after some time.");
-  });
-}
-
